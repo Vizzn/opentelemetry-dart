@@ -6,8 +6,10 @@ import '../../../api.dart' as api;
 class NoopTextMapPropagator implements api.TextMapPropagator {
   @override
   api.Context extract(
-          api.Context context, dynamic carrier, api.TextMapGetter getter) =>
-      context;
+    api.Context context,
+    dynamic carrier,
+    api.TextMapGetter getter,
+  ) => context;
 
   @override
   void inject(api.Context context, dynamic carrier, api.TextMapSetter setter) {}

@@ -29,101 +29,131 @@ class TestingExtractor implements api.TextMapGetter<Map<String, String>> {
 void main() {
   test('inject and extract trace context', () {
     final testSpan = Span(
-        'TestSpan',
-        api.SpanContext(
-            api.TraceId.fromString('4bf92f3577b34da6a3ce929d0e0e4736'),
-            api.SpanId.fromString('0000000000c0ffee'),
-            api.TraceFlags.sampled,
-            api.TraceState.fromString(
-                'rojo=00f067aa0ba902b7,congo=t61rcWkgMzE')),
-        api.SpanId.fromString('00f067aa0ba902b7'),
+      'TestSpan',
+      api.SpanContext(
+        api.TraceId.fromString('4bf92f3577b34da6a3ce929d0e0e4736'),
+        api.SpanId.fromString('0000000000c0ffee'),
+        api.TraceFlags.sampled,
+        api.TraceState.fromString('rojo=00f067aa0ba902b7,congo=t61rcWkgMzE'),
+      ),
+      api.SpanId.fromString('00f067aa0ba902b7'),
+      [],
+      sdk.DateTimeTimeProvider(),
+      sdk.Resource([]),
+      sdk.InstrumentationScope(
+        'library_name',
+        'library_version',
+        'url://schema',
         [],
-        sdk.DateTimeTimeProvider(),
-        sdk.Resource([]),
-        sdk.InstrumentationScope(
-            'library_name', 'library_version', 'url://schema', []),
-        api.SpanKind.client,
-        [],
-        sdk.SpanLimits(),
-        sdk.DateTimeTimeProvider().now);
+      ),
+      api.SpanKind.client,
+      [],
+      sdk.SpanLimits(),
+      sdk.DateTimeTimeProvider().now,
+    );
     final testPropagator = api.W3CTraceContextPropagator();
     final testCarrier = <String, String>{};
     final testContext = api.contextWithSpan(api.Context.current, testSpan);
 
     testPropagator.inject(testContext, testCarrier, TestingInjector());
     final resultSpan = api.spanFromContext(
-        testPropagator.extract(testContext, testCarrier, TestingExtractor()));
+      testPropagator.extract(testContext, testCarrier, TestingExtractor()),
+    );
 
     expect(resultSpan.parentSpanId.toString(), equals('0000000000000000'));
     expect(resultSpan.spanContext.isValid, isTrue);
     expect(
-        resultSpan.spanContext.spanId.toString(), equals('0000000000c0ffee'));
-    expect(resultSpan.spanContext.traceId.toString(),
-        equals('4bf92f3577b34da6a3ce929d0e0e4736'));
+      resultSpan.spanContext.spanId.toString(),
+      equals('0000000000c0ffee'),
+    );
+    expect(
+      resultSpan.spanContext.traceId.toString(),
+      equals('4bf92f3577b34da6a3ce929d0e0e4736'),
+    );
     expect(resultSpan.spanContext.traceFlags, equals(api.TraceFlags.sampled));
-    expect(resultSpan.spanContext.traceState.toString(),
-        equals('rojo=00f067aa0ba902b7,congo=t61rcWkgMzE'));
+    expect(
+      resultSpan.spanContext.traceState.toString(),
+      equals('rojo=00f067aa0ba902b7,congo=t61rcWkgMzE'),
+    );
   });
 
   test('inject and extract invalid trace parent', () {
     final testSpan = Span(
-        'TestSpan',
-        api.SpanContext(
-            api.TraceId.fromString('00000000000000000000000000000000'),
-            api.SpanId.fromString('0000000000c0ffee'),
-            api.TraceFlags.none,
-            api.TraceState.fromString(
-                'rojo=00f067aa0ba902b7,congo=t61rcWkgMzE')),
-        api.SpanId.fromString('0000000000000000'),
+      'TestSpan',
+      api.SpanContext(
+        api.TraceId.fromString('00000000000000000000000000000000'),
+        api.SpanId.fromString('0000000000c0ffee'),
+        api.TraceFlags.none,
+        api.TraceState.fromString('rojo=00f067aa0ba902b7,congo=t61rcWkgMzE'),
+      ),
+      api.SpanId.fromString('0000000000000000'),
+      [],
+      sdk.DateTimeTimeProvider(),
+      sdk.Resource([]),
+      sdk.InstrumentationScope(
+        'library_name',
+        'library_version',
+        'url://schema',
         [],
-        sdk.DateTimeTimeProvider(),
-        sdk.Resource([]),
-        sdk.InstrumentationScope(
-            'library_name', 'library_version', 'url://schema', []),
-        api.SpanKind.client,
-        [],
-        sdk.SpanLimits(),
-        sdk.DateTimeTimeProvider().now);
+      ),
+      api.SpanKind.client,
+      [],
+      sdk.SpanLimits(),
+      sdk.DateTimeTimeProvider().now,
+    );
     final testPropagator = api.W3CTraceContextPropagator();
     final testCarrier = <String, String>{};
     final testContext = api.contextWithSpan(api.Context.current, testSpan);
 
     testPropagator.inject(testContext, testCarrier, TestingInjector());
     final resultSpan = api.spanFromContext(
-        testPropagator.extract(testContext, testCarrier, TestingExtractor()));
+      testPropagator.extract(testContext, testCarrier, TestingExtractor()),
+    );
 
     expect(resultSpan.parentSpanId.toString(), equals('0000000000000000'));
     expect(resultSpan.spanContext.isValid, isFalse);
     expect(
-        resultSpan.spanContext.spanId.toString(), equals('0000000000c0ffee'));
-    expect(resultSpan.spanContext.traceId.toString(),
-        equals('00000000000000000000000000000000'));
+      resultSpan.spanContext.spanId.toString(),
+      equals('0000000000c0ffee'),
+    );
+    expect(
+      resultSpan.spanContext.traceId.toString(),
+      equals('00000000000000000000000000000000'),
+    );
     expect(resultSpan.spanContext.traceFlags, equals(api.TraceFlags.none));
-    expect(resultSpan.spanContext.traceState.toString(),
-        equals('rojo=00f067aa0ba902b7,congo=t61rcWkgMzE'));
+    expect(
+      resultSpan.spanContext.traceState.toString(),
+      equals('rojo=00f067aa0ba902b7,congo=t61rcWkgMzE'),
+    );
   });
 
   test('extract and inject with child span', () {
     final testSpan = Span(
-        'TestSpan',
-        api.SpanContext(
-            api.TraceId.fromString('4bf92f3577b34da6a3ce929d0e0e4736'),
-            api.SpanId.fromString('0000000000c0ffee'),
-            api.TraceFlags.sampled,
-            api.TraceState.fromString(
-                'rojo=00f067aa0ba902b7,congo=t61rcWkgMzE')),
-        api.SpanId.fromString('00f067aa0ba902b7'),
+      'TestSpan',
+      api.SpanContext(
+        api.TraceId.fromString('4bf92f3577b34da6a3ce929d0e0e4736'),
+        api.SpanId.fromString('0000000000c0ffee'),
+        api.TraceFlags.sampled,
+        api.TraceState.fromString('rojo=00f067aa0ba902b7,congo=t61rcWkgMzE'),
+      ),
+      api.SpanId.fromString('00f067aa0ba902b7'),
+      [],
+      sdk.DateTimeTimeProvider(),
+      sdk.Resource([]),
+      sdk.InstrumentationScope(
+        'library_name',
+        'library_version',
+        'url://schema',
         [],
-        sdk.DateTimeTimeProvider(),
-        sdk.Resource([]),
-        sdk.InstrumentationScope(
-            'library_name', 'library_version', 'url://schema', []),
-        api.SpanKind.client,
-        [],
-        sdk.SpanLimits(),
-        sdk.DateTimeTimeProvider().now);
-    final tracer = sdk.TracerProviderBase(processors: [])
-        .getTracer('appName', version: '1.0.0');
+      ),
+      api.SpanKind.client,
+      [],
+      sdk.SpanLimits(),
+      sdk.DateTimeTimeProvider().now,
+    );
+    final tracer = sdk.TracerProviderBase(
+      processors: [],
+    ).getTracer('appName', version: '1.0.0');
     final testPropagator = api.W3CTraceContextPropagator();
     final testCarrier = <String, String>{};
 
@@ -132,23 +162,33 @@ void main() {
     final testContext = api.contextWithSpan(api.Context.current, testSpan);
     testPropagator.inject(testContext, testCarrier, TestingInjector());
     final parentSpan = api.spanFromContext(
-        testPropagator.extract(testContext, testCarrier, TestingExtractor()));
+      testPropagator.extract(testContext, testCarrier, TestingExtractor()),
+    );
 
     expect(parentSpan, isNotNull);
 
     // Use the transmitted Span as a receiver.
-    final resultSpan = tracer.startSpan('doWork',
-        context: api.contextWithSpan(api.Context.current, testSpan))
-      ..end();
+    final resultSpan = tracer.startSpan(
+      'doWork',
+      context: api.contextWithSpan(api.Context.current, testSpan),
+    )..end();
 
     // Verify that data from the original Span propagates to the child.
-    expect(resultSpan.parentSpanId.toString(),
-        testSpan.spanContext.spanId.toString());
-    expect(resultSpan.spanContext.traceId.toString(),
-        equals(testSpan.spanContext.traceId.toString()));
-    expect(resultSpan.spanContext.traceState.toString(),
-        equals(testSpan.spanContext.traceState.toString()));
-    expect(resultSpan.spanContext.traceFlags.toString(),
-        equals(testSpan.spanContext.traceFlags.toString()));
+    expect(
+      resultSpan.parentSpanId.toString(),
+      testSpan.spanContext.spanId.toString(),
+    );
+    expect(
+      resultSpan.spanContext.traceId.toString(),
+      equals(testSpan.spanContext.traceId.toString()),
+    );
+    expect(
+      resultSpan.spanContext.traceState.toString(),
+      equals(testSpan.spanContext.traceState.toString()),
+    );
+    expect(
+      resultSpan.spanContext.traceFlags.toString(),
+      equals(testSpan.spanContext.traceFlags.toString()),
+    );
   });
 }

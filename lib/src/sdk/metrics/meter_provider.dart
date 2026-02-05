@@ -20,20 +20,25 @@ class MeterProvider implements api.MeterProvider {
   final sdk.Resource resource;
 
   MeterProvider({sdk.Resource? resource})
-      : resource = resource ?? sdk.Resource([]);
+    : resource = resource ?? sdk.Resource([]);
 
   @override
-  api.Meter get(String name,
-      {String version = '',
-      String schemaUrl = '',
-      List<api.Attribute> attributes = const []}) {
+  api.Meter get(
+    String name, {
+    String version = '',
+    String schemaUrl = '',
+    List<api.Attribute> attributes = const [],
+  }) {
     if (name.isEmpty) {
       _logger.warning('Invalid Meter Name', '', StackTrace.current);
     }
 
     return meters.putIfAbsent(
-        hash3(name, version, schemaUrl),
-        () => sdk.Meter(resource,
-            InstrumentationScope(name, version, schemaUrl, attributes)));
+      hash3(name, version, schemaUrl),
+      () => sdk.Meter(
+        resource,
+        InstrumentationScope(name, version, schemaUrl, attributes),
+      ),
+    );
   }
 }

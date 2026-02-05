@@ -29,8 +29,8 @@ format:
 test:
 	@dart test ./test \
 		--chain-stack-traces \
-		--platform vm \
-		--platform chrome
+		--platform vm,chrome \
+		-c dart2js,dart2wasm
 
 changelog:
 	# requires the ruby gem: gem install github_changelog_generator

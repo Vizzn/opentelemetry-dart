@@ -29,8 +29,10 @@ void main() {
   test('create from id generator', () {
     final testTraceId = api.TraceId.fromIdGenerator(MockIdGenerator());
 
-    expect(testTraceId.get(),
-        equals([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]));
+    expect(
+      testTraceId.get(),
+      equals([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]),
+    );
     expect(testTraceId.isValid, isTrue);
     expect(testTraceId.toString(), equals('0102030405060708090a0b0c0d0e0f'));
   });
@@ -38,8 +40,10 @@ void main() {
   test('create from string', () {
     final testTraceId = api.TraceId.fromString('010203');
 
-    expect(testTraceId.get(),
-        equals([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3]));
+    expect(
+      testTraceId.get(),
+      equals([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3]),
+    );
     expect(testTraceId.isValid, isTrue);
     expect(testTraceId.toString(), equals('00000000000000000000000000010203'));
   });
@@ -47,8 +51,10 @@ void main() {
   test('create invalid id', () {
     final testTraceId = api.TraceId.invalid();
 
-    expect(testTraceId.get(),
-        equals([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]));
+    expect(
+      testTraceId.get(),
+      equals([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+    );
     expect(testTraceId.isValid, isFalse);
     expect(testTraceId.toString(), equals('00000000000000000000000000000000'));
   });

@@ -13,7 +13,7 @@ class TraceId {
 
   TraceId(this._id);
   TraceId.fromIdGenerator(api.IdGenerator generator)
-      : _id = generator.generateTraceId();
+    : _id = generator.generateTraceId();
   TraceId.fromString(String id) : _id = [] {
     id = id.padLeft(TraceId.sizeBits, '0');
 

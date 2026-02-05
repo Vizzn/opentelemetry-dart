@@ -8,6 +8,9 @@ class SpanLink {
   final List<api.Attribute> attributes;
   final int droppedAttributes;
 
-  SpanLink(this.context,
-      {this.attributes = const [], this.droppedAttributes = 0});
+  SpanLink(
+    this.context, {
+    this.attributes = const [],
+    this.droppedAttributes = 0,
+  });
 }

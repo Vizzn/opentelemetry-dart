@@ -9,9 +9,11 @@ class TraceState {
   static const int _KEY_MAX_SIZE = 256;
   static const int _VALUE_MAX_SIZE = 256;
   static final RegExp validKeyRegex = RegExp(
-      r'^[a-z][\w\-*/]{0,255}$|^[a-z0-9][\w\-*/]{0,239}@[\w\-*/]{0,13}$');
-  static final RegExp validValueRegex =
-      RegExp(r'^[\w"@#$%^&*()+\-./:;<>?\[\]\\`{|\}]{1,256}$');
+    r'^[a-z][\w\-*/]{0,255}$|^[a-z0-9][\w\-*/]{0,239}@[\w\-*/]{0,13}$',
+  );
+  static final RegExp validValueRegex = RegExp(
+    r'^[\w"@#$%^&*()+\-./:;<>?\[\]\\`{|\}]{1,256}$',
+  );
   final Map<String, String> _state = {};
 
   TraceState.empty();

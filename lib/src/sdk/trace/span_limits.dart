@@ -86,17 +86,17 @@ class SpanLimits {
   ///default is unlimited.
   int get maxNumAttributeLength => _maxNumAttributeLength;
 
-  const SpanLimits(
-      {int maxNumAttributes = _DEFAULT_MAXNUM_ATTRIBUTES,
-      int maxNumEvents = _DEFAULT_MAXNUM_EVENTS,
-      int maxNumLink = _DEFAULT_MAXNUM_LINKS,
-      int maxNumAttributesPerEvent = _DEFAULT_MAXNUM_ATTRIBUTES_PER_EVENT,
-      int maxNumAttributesPerLink = _DEFAULT_MAXNUM_ATTRIBUTES_PER_LINK,
-      int maxNumAttributeLength = _DEFAULT_MAXNUM_ATTRIBUTES_LENGTH})
-      : _maxNumAttributes = maxNumAttributes,
-        _maxNumEvents = maxNumEvents,
-        _maxNumLink = maxNumLink,
-        _maxNumAttributesPerEvent = maxNumAttributesPerEvent,
-        _maxNumAttributesPerLink = maxNumAttributesPerLink,
-        _maxNumAttributeLength = maxNumAttributeLength;
+  const SpanLimits({
+    int maxNumAttributes = _DEFAULT_MAXNUM_ATTRIBUTES,
+    int maxNumEvents = _DEFAULT_MAXNUM_EVENTS,
+    int maxNumLink = _DEFAULT_MAXNUM_LINKS,
+    int maxNumAttributesPerEvent = _DEFAULT_MAXNUM_ATTRIBUTES_PER_EVENT,
+    int maxNumAttributesPerLink = _DEFAULT_MAXNUM_ATTRIBUTES_PER_LINK,
+    int maxNumAttributeLength = _DEFAULT_MAXNUM_ATTRIBUTES_LENGTH,
+  }) : _maxNumAttributes = maxNumAttributes,
+       _maxNumEvents = maxNumEvents,
+       _maxNumLink = maxNumLink,
+       _maxNumAttributesPerEvent = maxNumAttributesPerEvent,
+       _maxNumAttributesPerLink = maxNumAttributesPerLink,
+       _maxNumAttributeLength = maxNumAttributeLength;
 }

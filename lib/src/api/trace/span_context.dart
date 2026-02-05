@@ -15,19 +15,22 @@ class SpanContext {
 
   /// Construct a [SpanContext].
   SpanContext(this.traceId, this.spanId, this.traceFlags, this.traceState)
-      : isRemote = false;
+    : isRemote = false;
 
   /// Construct a [SpanContext] representing an operation which originated from
   /// a remote source.
   SpanContext.remote(
-      this.traceId, this.spanId, this.traceFlags, this.traceState)
-      : isRemote = true;
+    this.traceId,
+    this.spanId,
+    this.traceFlags,
+    this.traceState,
+  ) : isRemote = true;
 
   /// Construct an invalid [SpanContext].
   SpanContext.invalid()
-      : spanId = api.SpanId.invalid(),
-        traceId = api.TraceId.invalid(),
-        traceFlags = api.TraceFlags.none,
-        traceState = api.TraceState.empty(),
-        isRemote = false;
+    : spanId = api.SpanId.invalid(),
+      traceId = api.TraceId.invalid(),
+      traceFlags = api.TraceFlags.none,
+      traceState = api.TraceState.empty(),
+      isRemote = false;
 }

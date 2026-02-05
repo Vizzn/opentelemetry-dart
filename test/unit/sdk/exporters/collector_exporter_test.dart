@@ -24,16 +24,21 @@ import 'package:test/test.dart';
 import '../../mocks.dart';
 
 void main() {
-  final uri =
-      Uri.parse('https://example.test/s/opentelemetry-collector/v1/traces');
+  final uri = Uri.parse(
+    'https://example.test/s/opentelemetry-collector/v1/traces',
+  );
 
   group('Send spans with success - ', () {
     late MockHttpClient mockClient;
     setUp(() {
       mockClient = MockHttpClient();
-      when(() => mockClient.post(uri,
-              body: any(named: 'body'), headers: any(named: 'headers')))
-          .thenAnswer((_) async => Response('', 200));
+      when(
+        () => mockClient.post(
+          uri,
+          body: any(named: 'body'),
+          headers: any(named: 'headers'),
+        ),
+      ).thenAnswer((_) async => Response('', 200));
     });
 
     tearDown(() {
@@ -41,188 +46,251 @@ void main() {
     });
 
     test('sends spans', () {
-      final resource =
-          sdk.Resource([api.Attribute.fromString('service.name', 'bar')]);
+      final resource = sdk.Resource([
+        api.Attribute.fromString('service.name', 'bar'),
+      ]);
       final instrumentationLibrary = sdk.InstrumentationScope(
-          'library_name', 'library_version', 'url://schema', []);
+        'library_name',
+        'library_version',
+        'url://schema',
+        [],
+      );
       final limits = sdk.SpanLimits(maxNumAttributeLength: 5);
-      final span1 = Span(
-          'foo',
-          api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([7, 8, 9]),
-              api.TraceFlags.none, api.TraceState.empty()),
-          api.SpanId([4, 5, 6]),
-          [],
-          sdk.DateTimeTimeProvider(),
-          resource,
-          instrumentationLibrary,
-          api.SpanKind.client,
-          [],
-          sdk.SpanLimits(),
-          sdk.DateTimeTimeProvider().now)
-        ..setAttributes([api.Attribute.fromString('foo', 'bar')])
-        ..end();
-      final span2 = Span(
-          'baz',
-          api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([10, 11, 12]),
-              api.TraceFlags.none, api.TraceState.empty()),
-          api.SpanId([4, 5, 6]),
-          [],
-          sdk.DateTimeTimeProvider(),
-          resource,
-          instrumentationLibrary,
-          api.SpanKind.internal,
-          applyLinkLimits([
-            api.SpanLink(span1.spanContext, attributes: [
-              api.Attribute.fromString('longKey',
-                  'I am very long with maxNumAttributeLength: 5 limitation!')
-            ]),
-          ], limits),
-          limits,
-          sdk.DateTimeTimeProvider().now)
-        ..setAttributes([api.Attribute.fromBoolean('bool', true)])
-        ..addEvent('testEvent',
-            timestamp: sdk.DateTimeTimeProvider().now,
-            attributes: [api.Attribute.fromString('foo', 'bar')])
-        ..end();
+      final span1 =
+          Span(
+              'foo',
+              api.SpanContext(
+                api.TraceId([1, 2, 3]),
+                api.SpanId([7, 8, 9]),
+                api.TraceFlags.none,
+                api.TraceState.empty(),
+              ),
+              api.SpanId([4, 5, 6]),
+              [],
+              sdk.DateTimeTimeProvider(),
+              resource,
+              instrumentationLibrary,
+              api.SpanKind.client,
+              [],
+              sdk.SpanLimits(),
+              sdk.DateTimeTimeProvider().now,
+            )
+            ..setAttributes([api.Attribute.fromString('foo', 'bar')])
+            ..end();
+      final span2 =
+          Span(
+              'baz',
+              api.SpanContext(
+                api.TraceId([1, 2, 3]),
+                api.SpanId([10, 11, 12]),
+                api.TraceFlags.none,
+                api.TraceState.empty(),
+              ),
+              api.SpanId([4, 5, 6]),
+              [],
+              sdk.DateTimeTimeProvider(),
+              resource,
+              instrumentationLibrary,
+              api.SpanKind.internal,
+              applyLinkLimits([
+                api.SpanLink(
+                  span1.spanContext,
+                  attributes: [
+                    api.Attribute.fromString(
+                      'longKey',
+                      'I am very long with maxNumAttributeLength: 5 limitation!',
+                    ),
+                  ],
+                ),
+              ], limits),
+              limits,
+              sdk.DateTimeTimeProvider().now,
+            )
+            ..setAttributes([api.Attribute.fromBoolean('bool', true)])
+            ..addEvent(
+              'testEvent',
+              timestamp: sdk.DateTimeTimeProvider().now,
+              attributes: [api.Attribute.fromString('foo', 'bar')],
+            )
+            ..end();
 
       sdk.CollectorExporter(uri, httpClient: mockClient).export([span1, span2]);
 
-      final expectedBody =
-          pb_trace_service.ExportTraceServiceRequest(resourceSpans: [
-        pb.ResourceSpans(
-            resource: pb_resource.Resource(attributes: [
-              pb_common.KeyValue(
+      final expectedBody = pb_trace_service.ExportTraceServiceRequest(
+        resourceSpans: [
+          pb.ResourceSpans(
+            resource: pb_resource.Resource(
+              attributes: [
+                pb_common.KeyValue(
                   key: 'service.name',
-                  value: pb_common.AnyValue(stringValue: 'bar'))
-            ]),
+                  value: pb_common.AnyValue(stringValue: 'bar'),
+                ),
+              ],
+            ),
             scopeSpans: [
               pb.ScopeSpans(
-                  spans: [
-                    pb.Span(
+                spans: [
+                  pb.Span(
+                    traceId: [1, 2, 3],
+                    spanId: [7, 8, 9],
+                    traceState: '',
+                    parentSpanId: [4, 5, 6],
+                    name: 'foo',
+                    kind: pb.Span_SpanKind.SPAN_KIND_CLIENT,
+                    startTimeUnixNano: span1.startTime,
+                    endTimeUnixNano: span1.endTime,
+                    attributes: [
+                      pb_common.KeyValue(
+                        key: 'foo',
+                        value: pb_common.AnyValue(stringValue: 'bar'),
+                      ),
+                    ],
+                    droppedAttributesCount: 0,
+                    status: pb.Status(
+                      code: pb.Status_StatusCode.STATUS_CODE_UNSET,
+                      message: '',
+                    ),
+                    flags: 0,
+                  ),
+                  pb.Span(
+                    traceId: [1, 2, 3],
+                    spanId: [10, 11, 12],
+                    traceState: '',
+                    parentSpanId: [4, 5, 6],
+                    name: 'baz',
+                    kind: pb.Span_SpanKind.SPAN_KIND_INTERNAL,
+                    startTimeUnixNano: span2.startTime,
+                    endTimeUnixNano: span2.endTime,
+                    attributes: [
+                      pb_common.KeyValue(
+                        key: 'bool',
+                        value: pb_common.AnyValue(boolValue: true),
+                      ),
+                    ],
+                    droppedAttributesCount: 0,
+                    events: [
+                      pb.Span_Event(
+                        timeUnixNano: span2.events.first.timestamp,
+                        name: 'testEvent',
+                        attributes: [
+                          pb_common.KeyValue(
+                            key: 'foo',
+                            value: pb_common.AnyValue(stringValue: 'bar'),
+                          ),
+                        ],
+                        droppedAttributesCount: 0,
+                      ),
+                    ],
+                    droppedEventsCount: 0,
+                    status: pb.Status(
+                      code: pb.Status_StatusCode.STATUS_CODE_UNSET,
+                      message: '',
+                    ),
+                    links: [
+                      pb.Span_Link(
                         traceId: [1, 2, 3],
                         spanId: [7, 8, 9],
                         traceState: '',
-                        parentSpanId: [4, 5, 6],
-                        name: 'foo',
-                        kind: pb.Span_SpanKind.SPAN_KIND_CLIENT,
-                        startTimeUnixNano: span1.startTime,
-                        endTimeUnixNano: span1.endTime,
                         attributes: [
                           pb_common.KeyValue(
-                              key: 'foo',
-                              value: pb_common.AnyValue(stringValue: 'bar'))
+                            key: 'longKey',
+                            value: pb_common.AnyValue(stringValue: 'I am '),
+                          ),
                         ],
                         droppedAttributesCount: 0,
-                        status: pb.Status(
-                            code: pb.Status_StatusCode.STATUS_CODE_UNSET,
-                            message: ''),
-                        flags: 0),
-                    pb.Span(
-                        traceId: [1, 2, 3],
-                        spanId: [10, 11, 12],
-                        traceState: '',
-                        parentSpanId: [4, 5, 6],
-                        name: 'baz',
-                        kind: pb.Span_SpanKind.SPAN_KIND_INTERNAL,
-                        startTimeUnixNano: span2.startTime,
-                        endTimeUnixNano: span2.endTime,
-                        attributes: [
-                          pb_common.KeyValue(
-                              key: 'bool',
-                              value: pb_common.AnyValue(boolValue: true))
-                        ],
-                        droppedAttributesCount: 0,
-                        events: [
-                          pb.Span_Event(
-                            timeUnixNano: span2.events.first.timestamp,
-                            name: 'testEvent',
-                            attributes: [
-                              pb_common.KeyValue(
-                                  key: 'foo',
-                                  value: pb_common.AnyValue(stringValue: 'bar'))
-                            ],
-                            droppedAttributesCount: 0,
-                          )
-                        ],
-                        droppedEventsCount: 0,
-                        status: pb.Status(
-                            code: pb.Status_StatusCode.STATUS_CODE_UNSET,
-                            message: ''),
-                        links: [
-                          pb.Span_Link(
-                              traceId: [1, 2, 3],
-                              spanId: [7, 8, 9],
-                              traceState: '',
-                              attributes: [
-                                pb_common.KeyValue(
-                                    key: 'longKey',
-                                    value: pb_common.AnyValue(
-                                        stringValue: 'I am '))
-                              ],
-                              droppedAttributesCount: 0,
-                              flags: 0)
-                        ],
-                        droppedLinksCount: 0,
-                        flags: 0)
-                  ],
-                  scope: pb_common.InstrumentationScope(
-                      name: 'library_name', version: 'library_version'))
-            ])
-      ]);
+                        flags: 0,
+                      ),
+                    ],
+                    droppedLinksCount: 0,
+                    flags: 0,
+                  ),
+                ],
+                scope: pb_common.InstrumentationScope(
+                  name: 'library_name',
+                  version: 'library_version',
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
 
-      final verifyResult = verify(() => mockClient.post(uri,
+      final verifyResult = verify(
+        () => mockClient.post(
+          uri,
           body: captureAny(named: 'body'),
-          headers: {'Content-Type': 'application/x-protobuf'}))
-        ..called(1);
+          headers: {'Content-Type': 'application/x-protobuf'},
+        ),
+      )..called(1);
       final captured = verifyResult.captured;
 
-      final traceRequest =
-          pb_trace_service.ExportTraceServiceRequest.fromBuffer(
-              captured[0] as Uint8List);
+      final traceRequest = pb_trace_service
+          .ExportTraceServiceRequest.fromBuffer(captured[0] as Uint8List);
       expect(traceRequest, equals(expectedBody));
     });
 
     test('does not send spans when shutdown', () async {
       final span = Span(
-          'foo',
-          api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([7, 8, 9]),
-              api.TraceFlags.none, api.TraceState.empty()),
-          api.SpanId([4, 5, 6]),
+        'foo',
+        api.SpanContext(
+          api.TraceId([1, 2, 3]),
+          api.SpanId([7, 8, 9]),
+          api.TraceFlags.none,
+          api.TraceState.empty(),
+        ),
+        api.SpanId([4, 5, 6]),
+        [],
+        sdk.DateTimeTimeProvider(),
+        sdk.Resource([]),
+        sdk.InstrumentationScope(
+          'library_name',
+          'library_version',
+          'url://schema',
           [],
-          sdk.DateTimeTimeProvider(),
-          sdk.Resource([]),
-          sdk.InstrumentationScope(
-              'library_name', 'library_version', 'url://schema', []),
-          api.SpanKind.internal,
-          [],
-          sdk.SpanLimits(),
-          sdk.DateTimeTimeProvider().now)
-        ..end();
+        ),
+        api.SpanKind.internal,
+        [],
+        sdk.SpanLimits(),
+        sdk.DateTimeTimeProvider().now,
+      )..end();
       sdk.CollectorExporter(uri, httpClient: mockClient)
         ..shutdown()
         ..export([span]);
 
       verify(() => mockClient.close()).called(1);
-      verifyNever(() => mockClient.post(uri,
-          body: anything, headers: {'Content-Type': 'application/x-protobuf'}));
+      verifyNever(
+        () => mockClient.post(
+          uri,
+          body: anything,
+          headers: {'Content-Type': 'application/x-protobuf'},
+        ),
+      );
     });
 
     test('supplies HTTP headers', () async {
       final span = Span(
-          'foo',
-          api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([7, 8, 9]),
-              api.TraceFlags.none, api.TraceState.empty()),
-          api.SpanId([4, 5, 6]),
+        'foo',
+        api.SpanContext(
+          api.TraceId([1, 2, 3]),
+          api.SpanId([7, 8, 9]),
+          api.TraceFlags.none,
+          api.TraceState.empty(),
+        ),
+        api.SpanId([4, 5, 6]),
+        [],
+        sdk.DateTimeTimeProvider(),
+        sdk.Resource([]),
+        sdk.InstrumentationScope(
+          'library_name',
+          'library_version',
+          'url://schema',
           [],
-          sdk.DateTimeTimeProvider(),
-          sdk.Resource([]),
-          sdk.InstrumentationScope(
-              'library_name', 'library_version', 'url://schema', []),
-          api.SpanKind.internal,
-          [],
-          sdk.SpanLimits(),
-          sdk.DateTimeTimeProvider().now)
-        ..end();
+        ),
+        api.SpanKind.internal,
+        [],
+        sdk.SpanLimits(),
+        sdk.DateTimeTimeProvider().now,
+      )..end();
 
       final suppliedHeaders = {
         'header-param-key-1': 'header-param-value-1',
@@ -233,39 +301,49 @@ void main() {
         ...suppliedHeaders,
       };
 
-      sdk.CollectorExporter(uri,
-              httpClient: mockClient, headers: suppliedHeaders)
-          .export([span]);
+      sdk.CollectorExporter(
+        uri,
+        httpClient: mockClient,
+        headers: suppliedHeaders,
+      ).export([span]);
 
-      verify(() =>
-              mockClient.post(uri, body: anything, headers: expectedHeaders))
-          .called(1);
+      verify(
+        () => mockClient.post(uri, body: anything, headers: expectedHeaders),
+      ).called(1);
     });
 
     test('does not supply HTTP headers', () async {
       final span = Span(
-          'foo',
-          api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([7, 8, 9]),
-              api.TraceFlags.none, api.TraceState.empty()),
-          api.SpanId([4, 5, 6]),
+        'foo',
+        api.SpanContext(
+          api.TraceId([1, 2, 3]),
+          api.SpanId([7, 8, 9]),
+          api.TraceFlags.none,
+          api.TraceState.empty(),
+        ),
+        api.SpanId([4, 5, 6]),
+        [],
+        sdk.DateTimeTimeProvider(),
+        sdk.Resource([]),
+        sdk.InstrumentationScope(
+          'library_name',
+          'library_version',
+          'url://schema',
           [],
-          sdk.DateTimeTimeProvider(),
-          sdk.Resource([]),
-          sdk.InstrumentationScope(
-              'library_name', 'library_version', 'url://schema', []),
-          api.SpanKind.internal,
-          [],
-          sdk.SpanLimits(),
-          sdk.DateTimeTimeProvider().now)
-        ..end();
+        ),
+        api.SpanKind.internal,
+        [],
+        sdk.SpanLimits(),
+        sdk.DateTimeTimeProvider().now,
+      )..end();
 
       final expectedHeaders = {'Content-Type': 'application/x-protobuf'};
 
       sdk.CollectorExporter(uri, httpClient: mockClient).export([span]);
 
-      verify(() =>
-              mockClient.post(uri, body: anything, headers: expectedHeaders))
-          .called(1);
+      verify(
+        () => mockClient.post(uri, body: anything, headers: expectedHeaders),
+      ).called(1);
     });
   });
 
@@ -274,9 +352,13 @@ void main() {
     final waitSeconds = Duration(seconds: 2);
     setUp(() {
       mockClient = MockHttpClient();
-      when(() => mockClient.post(uri,
-              body: any(named: 'body'), headers: any(named: 'headers')))
-          .thenAnswer((_) async => Response('', 403));
+      when(
+        () => mockClient.post(
+          uri,
+          body: any(named: 'body'),
+          headers: any(named: 'headers'),
+        ),
+      ).thenAnswer((_) async => Response('', 403));
     });
 
     tearDown(() {
@@ -284,34 +366,49 @@ void main() {
     });
     test('shows a warning log when export has exceptions', () async {
       final span = Span(
-          'foo',
-          api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([7, 8, 9]),
-              api.TraceFlags.none, api.TraceState.empty()),
-          api.SpanId([4, 5, 6]),
+        'foo',
+        api.SpanContext(
+          api.TraceId([1, 2, 3]),
+          api.SpanId([7, 8, 9]),
+          api.TraceFlags.none,
+          api.TraceState.empty(),
+        ),
+        api.SpanId([4, 5, 6]),
+        [],
+        sdk.DateTimeTimeProvider(),
+        sdk.Resource([]),
+        sdk.InstrumentationScope(
+          'library_name',
+          'library_version',
+          'url://schema',
           [],
-          sdk.DateTimeTimeProvider(),
-          sdk.Resource([]),
-          sdk.InstrumentationScope(
-              'library_name', 'library_version', 'url://schema', []),
-          api.SpanKind.internal,
-          [],
-          sdk.SpanLimits(),
-          sdk.DateTimeTimeProvider().now)
-        ..end();
+        ),
+        api.SpanKind.internal,
+        [],
+        sdk.SpanLimits(),
+        sdk.DateTimeTimeProvider().now,
+      )..end();
 
-      when(() => mockClient.post(uri,
-              body: any(named: 'body'),
-              headers: {'Content-Type': 'application/x-protobuf'}))
-          .thenThrow(Exception('Failed to connect'));
+      when(
+        () => mockClient.post(
+          uri,
+          body: any(named: 'body'),
+          headers: {'Content-Type': 'application/x-protobuf'},
+        ),
+      ).thenThrow(Exception('Failed to connect'));
 
       final records = <LogRecord>[];
       final sub = Logger.root.onRecord.listen(records.add);
       sdk.CollectorExporter(uri, httpClient: mockClient).export([span]);
       await Future.delayed(waitSeconds);
       await sub.cancel();
-      verify(() => mockClient.post(uri,
+      verify(
+        () => mockClient.post(
+          uri,
           body: anything,
-          headers: {'Content-Type': 'application/x-protobuf'})).called(1);
+          headers: {'Content-Type': 'application/x-protobuf'},
+        ),
+      ).called(1);
 
       expect(records, hasLength(1));
       expect(records[0].level, equals(Level.WARNING));
@@ -319,64 +416,86 @@ void main() {
 
     test('client not return 200, retryable', () async {
       final span = Span(
-          'foo',
-          api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([7, 8, 9]),
-              api.TraceFlags.none, api.TraceState.empty()),
-          api.SpanId([4, 5, 6]),
+        'foo',
+        api.SpanContext(
+          api.TraceId([1, 2, 3]),
+          api.SpanId([7, 8, 9]),
+          api.TraceFlags.none,
+          api.TraceState.empty(),
+        ),
+        api.SpanId([4, 5, 6]),
+        [],
+        sdk.DateTimeTimeProvider(),
+        sdk.Resource([]),
+        sdk.InstrumentationScope(
+          'library_name',
+          'library_version',
+          'url://schema',
           [],
-          sdk.DateTimeTimeProvider(),
-          sdk.Resource([]),
-          sdk.InstrumentationScope(
-              'library_name', 'library_version', 'url://schema', []),
-          api.SpanKind.internal,
-          [],
-          sdk.SpanLimits(),
-          sdk.DateTimeTimeProvider().now)
-        ..end();
+        ),
+        api.SpanKind.internal,
+        [],
+        sdk.SpanLimits(),
+        sdk.DateTimeTimeProvider().now,
+      )..end();
 
-      when(() => mockClient.post(uri,
-              body: any(named: 'body'),
-              headers: {'Content-Type': 'application/x-protobuf'}))
-          .thenAnswer((_) async => Response('Service unAvailable', 503));
+      when(
+        () => mockClient.post(
+          uri,
+          body: any(named: 'body'),
+          headers: {'Content-Type': 'application/x-protobuf'},
+        ),
+      ).thenAnswer((_) async => Response('Service unAvailable', 503));
 
       final expectedHeaders = {'Content-Type': 'application/x-protobuf'};
       sdk.CollectorExporter(uri, httpClient: mockClient).export([span]);
       await Future.delayed(waitSeconds);
 
-      verify(() =>
-              mockClient.post(uri, body: anything, headers: expectedHeaders))
-          .called(3);
+      verify(
+        () => mockClient.post(uri, body: anything, headers: expectedHeaders),
+      ).called(3);
     });
 
     test('client not return 200, nonRetryable', () async {
       final span = Span(
-          'foo',
-          api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([7, 8, 9]),
-              api.TraceFlags.none, api.TraceState.empty()),
-          api.SpanId([4, 5, 6]),
+        'foo',
+        api.SpanContext(
+          api.TraceId([1, 2, 3]),
+          api.SpanId([7, 8, 9]),
+          api.TraceFlags.none,
+          api.TraceState.empty(),
+        ),
+        api.SpanId([4, 5, 6]),
+        [],
+        sdk.DateTimeTimeProvider(),
+        sdk.Resource([]),
+        sdk.InstrumentationScope(
+          'library_name',
+          'library_version',
+          'url://schema',
           [],
-          sdk.DateTimeTimeProvider(),
-          sdk.Resource([]),
-          sdk.InstrumentationScope(
-              'library_name', 'library_version', 'url://schema', []),
-          api.SpanKind.internal,
-          [],
-          sdk.SpanLimits(),
-          sdk.DateTimeTimeProvider().now)
-        ..end();
+        ),
+        api.SpanKind.internal,
+        [],
+        sdk.SpanLimits(),
+        sdk.DateTimeTimeProvider().now,
+      )..end();
 
-      when(() => mockClient.post(uri,
-              body: any(named: 'body'),
-              headers: {'Content-Type': 'application/x-protobuf'}))
-          .thenAnswer((_) async => Response('Service unAvailable', 400));
+      when(
+        () => mockClient.post(
+          uri,
+          body: any(named: 'body'),
+          headers: {'Content-Type': 'application/x-protobuf'},
+        ),
+      ).thenAnswer((_) async => Response('Service unAvailable', 400));
 
       final expectedHeaders = {'Content-Type': 'application/x-protobuf'};
       sdk.CollectorExporter(uri, httpClient: mockClient).export([span]);
       await Future.delayed(waitSeconds);
 
-      verify(() =>
-              mockClient.post(uri, body: anything, headers: expectedHeaders))
-          .called(1);
+      verify(
+        () => mockClient.post(uri, body: anything, headers: expectedHeaders),
+      ).called(1);
     });
   });
 }

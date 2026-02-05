@@ -25,8 +25,9 @@ class MapGetter implements TextMapGetter<Map> {
 }
 
 void main(List<String> args) async {
-  final tp =
-      TracerProviderBase(processors: [SimpleSpanProcessor(ConsoleExporter())]);
+  final tp = TracerProviderBase(
+    processors: [SimpleSpanProcessor(ConsoleExporter())],
+  );
   registerGlobalTracerProvider(tp);
 
   final tmp = W3CTraceContextPropagator();
@@ -42,8 +43,13 @@ void main(List<String> args) async {
 Future test(Map<String, String> carrier) async {
   globalTracerProvider
       .getTracer('instrumentation-name')
-      .startSpan('test-span-1',
-          context: globalTextMapPropagator.extract(
-              Context.current, carrier, MapGetter()))
+      .startSpan(
+        'test-span-1',
+        context: globalTextMapPropagator.extract(
+          Context.current,
+          carrier,
+          MapGetter(),
+        ),
+      )
       .end();
 }

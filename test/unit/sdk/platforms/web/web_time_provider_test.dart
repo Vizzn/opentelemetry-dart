@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. Please see https://github.com/Workiva/opentelemetry-dart/blob/master/LICENSE for more information
 
 @TestOn('chrome')
-
 import 'package:fixnum/fixnum.dart';
 import 'package:opentelemetry/src/sdk/platforms/web/time_providers/web_time_provider.dart';
 import 'package:test/test.dart';

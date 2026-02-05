@@ -26,9 +26,11 @@ api.TextMapPropagator get globalTextMapPropagator => _textMapPropagator;
 
 void registerGlobalTracerProvider(api.TracerProvider tracerProvider) {
   if (_tracerProvider != _noopTracerProvider) {
-    throw StateError('A global TracerProvider has already been created. '
-        'registerGlobalTracerProvider must be called only once before any '
-        'calls to the getter globalTracerProvider.');
+    throw StateError(
+      'A global TracerProvider has already been created. '
+      'registerGlobalTracerProvider must be called only once before any '
+      'calls to the getter globalTracerProvider.',
+    );
   }
 
   _tracerProvider = tracerProvider;
@@ -36,9 +38,11 @@ void registerGlobalTracerProvider(api.TracerProvider tracerProvider) {
 
 void registerGlobalLogProvider(LoggerProvider logProvider) {
   if (_logProvider != _noopLoggerProvider) {
-    throw StateError('A global LoggerProvider has already been created. '
-        'registerGlobalLoggerProvider must be called only once before any '
-        'calls to the getter globalLoggerProvider.');
+    throw StateError(
+      'A global LoggerProvider has already been created. '
+      'registerGlobalLoggerProvider must be called only once before any '
+      'calls to the getter globalLoggerProvider.',
+    );
   }
 
   _logProvider = logProvider;
@@ -46,9 +50,11 @@ void registerGlobalLogProvider(LoggerProvider logProvider) {
 
 void registerGlobalTextMapPropagator(api.TextMapPropagator textMapPropagator) {
   if (_textMapPropagator != _noopTextMapPropagator) {
-    throw StateError('A global TextMapPropagator has already been created. '
-        'registerGlobalTextMapPropagator must be called only once before any '
-        'calls to the getter globalTextMapPropagator.');
+    throw StateError(
+      'A global TextMapPropagator has already been created. '
+      'registerGlobalTextMapPropagator must be called only once before any '
+      'calls to the getter globalTextMapPropagator.',
+    );
   }
 
   _textMapPropagator = textMapPropagator;
@@ -58,66 +64,85 @@ void registerGlobalTextMapPropagator(api.TextMapPropagator textMapPropagator) {
 /// [api.Tracer] and marks the span as errored if an exception occurs.
 @Deprecated('Will be removed in v0.19.0. Use [trace] instead')
 @experimental
-Future<T> traceContext<T>(String name, Future<T> Function(api.Context) fn,
-    {api.Context? context,
-    api.Tracer? tracer,
-    bool newRoot = false,
-    api.SpanKind spanKind = api.SpanKind.internal,
-    List<api.SpanLink> spanLinks = const []}) async {
-  return trace(name, () => fn(api.Context.current),
-      context: context,
-      tracer: tracer,
-      newRoot: newRoot,
-      spanKind: spanKind,
-      spanLinks: spanLinks);
+Future<T> traceContext<T>(
+  String name,
+  Future<T> Function(api.Context) fn, {
+  api.Context? context,
+  api.Tracer? tracer,
+  bool newRoot = false,
+  api.SpanKind spanKind = api.SpanKind.internal,
+  List<api.SpanLink> spanLinks = const [],
+}) async {
+  return trace(
+    name,
+    () => fn(api.Context.current),
+    context: context,
+    tracer: tracer,
+    newRoot: newRoot,
+    spanKind: spanKind,
+    spanLinks: spanLinks,
+  );
 }
 
 /// Use [traceContextSync] instead of [traceContext] when [fn] is not an async
 /// function.
 @Deprecated('Will be removed in v0.19.0. Use [traceSync] instead')
 @experimental
-T traceContextSync<T>(String name, T Function(api.Context) fn,
-    {api.Context? context,
-    api.Tracer? tracer,
-    bool newRoot = false,
-    api.SpanKind spanKind = api.SpanKind.internal,
-    List<api.SpanLink> spanLinks = const []}) {
-  return traceSync(name, () => fn(api.Context.current),
-      context: context,
-      tracer: tracer,
-      newRoot: newRoot,
-      spanKind: spanKind,
-      spanLinks: spanLinks);
+T traceContextSync<T>(
+  String name,
+  T Function(api.Context) fn, {
+  api.Context? context,
+  api.Tracer? tracer,
+  bool newRoot = false,
+  api.SpanKind spanKind = api.SpanKind.internal,
+  List<api.SpanLink> spanLinks = const [],
+}) {
+  return traceSync(
+    name,
+    () => fn(api.Context.current),
+    context: context,
+    tracer: tracer,
+    newRoot: newRoot,
+    spanKind: spanKind,
+    spanLinks: spanLinks,
+  );
 }
 
 /// Records a span of the given [name] for the given function with a given
 /// [api.Tracer] and marks the span as errored if an exception occurs.
 @experimental
-Future<T> trace<T>(String name, Future<T> Function() fn,
-    {api.Context? context,
-    api.Tracer? tracer,
-    bool newRoot = false,
-    List<api.Attribute> spanAttributes = const [],
-    api.SpanKind spanKind = api.SpanKind.internal,
-    List<api.SpanLink> spanLinks = const []}) async {
+Future<T> trace<T>(
+  String name,
+  Future<T> Function() fn, {
+  api.Context? context,
+  api.Tracer? tracer,
+  bool newRoot = false,
+  List<api.Attribute> spanAttributes = const [],
+  api.SpanKind spanKind = api.SpanKind.internal,
+  List<api.SpanLink> spanLinks = const [],
+}) async {
   context ??= api.Context.current;
   tracer ??= _tracerProvider.getTracer('opentelemetry-dart');
 
   // TODO: use start span option `newRoot` instead
   var span;
   if (tracer is sdk.Tracer) {
-    span = tracer.startSpan(name,
-        context: context,
-        attributes: spanAttributes,
-        kind: spanKind,
-        links: spanLinks,
-        newRoot: newRoot);
+    span = tracer.startSpan(
+      name,
+      context: context,
+      attributes: spanAttributes,
+      kind: spanKind,
+      links: spanLinks,
+      newRoot: newRoot,
+    );
   } else {
-    span = tracer.startSpan(name,
-        context: newRoot ? api.Context.root : context,
-        attributes: spanAttributes,
-        kind: spanKind,
-        links: spanLinks);
+    span = tracer.startSpan(
+      name,
+      context: newRoot ? api.Context.root : context,
+      attributes: spanAttributes,
+      kind: spanKind,
+      links: spanLinks,
+    );
   }
 
   try {
@@ -141,31 +166,38 @@ Future<T> trace<T>(String name, Future<T> Function() fn,
 
 /// Use [traceSync] instead of [trace] when [fn] is not an async function.
 @experimental
-T traceSync<T>(String name, T Function() fn,
-    {api.Context? context,
-    api.Tracer? tracer,
-    bool newRoot = false,
-    List<api.Attribute> spanAttributes = const [],
-    api.SpanKind spanKind = api.SpanKind.internal,
-    List<api.SpanLink> spanLinks = const []}) {
+T traceSync<T>(
+  String name,
+  T Function() fn, {
+  api.Context? context,
+  api.Tracer? tracer,
+  bool newRoot = false,
+  List<api.Attribute> spanAttributes = const [],
+  api.SpanKind spanKind = api.SpanKind.internal,
+  List<api.SpanLink> spanLinks = const [],
+}) {
   context ??= api.Context.current;
   tracer ??= _tracerProvider.getTracer('opentelemetry-dart');
 
   // TODO: use start span option `newRoot` instead
   var span;
   if (tracer is sdk.Tracer) {
-    span = tracer.startSpan(name,
-        context: context,
-        attributes: spanAttributes,
-        kind: spanKind,
-        links: spanLinks,
-        newRoot: newRoot);
+    span = tracer.startSpan(
+      name,
+      context: context,
+      attributes: spanAttributes,
+      kind: spanKind,
+      links: spanLinks,
+      newRoot: newRoot,
+    );
   } else {
-    span = tracer.startSpan(name,
-        context: newRoot ? api.Context.root : context,
-        attributes: spanAttributes,
-        kind: spanKind,
-        links: spanLinks);
+    span = tracer.startSpan(
+      name,
+      context: newRoot ? api.Context.root : context,
+      attributes: spanAttributes,
+      kind: spanKind,
+      links: spanLinks,
+    );
   }
 
   try {
@@ -179,8 +211,11 @@ T traceSync<T>(String name, T Function() fn,
       }
 
       if (r is Future) {
-        throw ArgumentError.value(fn, 'fn',
-            'Use traceSync to trace functions that do not return a [Future].');
+        throw ArgumentError.value(
+          fn,
+          'fn',
+          'Use traceSync to trace functions that do not return a [Future].',
+        );
       }
       return r;
     });

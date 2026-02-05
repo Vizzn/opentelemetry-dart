@@ -7,7 +7,8 @@ abstract class SpanExporter {
   void export(List<ReadOnlySpan> spans);
 
   @Deprecated(
-      'This method will be removed in 0.19.0. Use [SpanProcessor] instead.')
+    'This method will be removed in 0.19.0. Use [SpanProcessor] instead.',
+  )
   void forceFlush();
 
   void shutdown();

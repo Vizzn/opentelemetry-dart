@@ -22,8 +22,10 @@ Int64 msToNs(num n, {int? fractionDigits}) {
 /// Time when navigation started or the service worker was started in
 /// nanoseconds.
 @experimental
-final Int64 timeOrigin =
-    msToNs(window.performance.timeOrigin, fractionDigits: 1);
+final Int64 timeOrigin = msToNs(
+  window.performance.timeOrigin,
+  fractionDigits: 1,
+);
 
 /// Converts a high-resolution timestamp from the browser performance API to an
 /// Int64 representing nanoseconds since Unix Epoch.

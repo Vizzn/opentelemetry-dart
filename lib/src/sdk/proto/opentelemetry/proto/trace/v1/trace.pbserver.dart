@@ -14,4 +14,3 @@
 // ignore_for_file: unnecessary_import, unnecessary_this, unused_import
 
 export 'trace.pb.dart';
-

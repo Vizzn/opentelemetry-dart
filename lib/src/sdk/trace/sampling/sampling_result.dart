@@ -3,11 +3,7 @@
 
 import '../../../../api.dart' as api;
 
-enum Decision {
-  drop,
-  recordOnly,
-  recordAndSample,
-}
+enum Decision { drop, recordOnly, recordAndSample }
 
 class SamplingResult {
   final Decision decision;

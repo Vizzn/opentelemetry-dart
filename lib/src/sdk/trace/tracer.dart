@@ -21,22 +21,25 @@ class Tracer implements api.Tracer {
 
   @protected
   const Tracer(
-      this._processors,
-      this._resource,
-      this._sampler,
-      this._timeProvider,
-      this._idGenerator,
-      this._instrumentationScope,
-      this._limits);
+    this._processors,
+    this._resource,
+    this._sampler,
+    this._timeProvider,
+    this._idGenerator,
+    this._instrumentationScope,
+    this._limits,
+  );
 
   @override
-  api.Span startSpan(String name,
-      {api.Context? context,
-      api.SpanKind kind = api.SpanKind.internal,
-      List<api.Attribute> attributes = const [],
-      List<api.SpanLink> links = const [],
-      Int64? startTime,
-      bool newRoot = false}) {
+  api.Span startSpan(
+    String name, {
+    api.Context? context,
+    api.SpanKind kind = api.SpanKind.internal,
+    List<api.Attribute> attributes = const [],
+    List<api.SpanLink> links = const [],
+    Int64? startTime,
+    bool newRoot = false,
+  }) {
     context ??= api.Context.current;
     startTime ??= _timeProvider.now;
 
@@ -51,27 +54,37 @@ class Tracer implements api.Tracer {
         ? psc.traceId
         : api.TraceId.fromIdGenerator(_idGenerator);
     final spanId = api.SpanId.fromIdGenerator(_idGenerator);
-    final samplerResult =
-        _sampler.shouldSample(context, traceId, name, kind, attributes, links);
+    final samplerResult = _sampler.shouldSample(
+      context,
+      traceId,
+      name,
+      kind,
+      attributes,
+      links,
+    );
     final traceFlags = (samplerResult.decision == sdk.Decision.recordAndSample)
         ? api.TraceFlags.sampled
         : api.TraceFlags.none;
-    final spanContext =
-        api.SpanContext(traceId, spanId, traceFlags, psc.traceState);
+    final spanContext = api.SpanContext(
+      traceId,
+      spanId,
+      traceFlags,
+      psc.traceState,
+    );
 
     final span = Span(
-        name,
-        spanContext,
-        psc.spanId,
-        _processors,
-        _timeProvider,
-        _resource,
-        _instrumentationScope,
-        kind,
-        applyLinkLimits(links, _limits),
-        _limits,
-        startTime)
-      ..setAttributes(attributes);
+      name,
+      spanContext,
+      psc.spanId,
+      _processors,
+      _timeProvider,
+      _resource,
+      _instrumentationScope,
+      kind,
+      applyLinkLimits(links, _limits),
+      _limits,
+      startTime,
+    )..setAttributes(attributes);
 
     for (var i = 0; i < _processors.length; i++) {
       _processors[i].onStart(span, context);

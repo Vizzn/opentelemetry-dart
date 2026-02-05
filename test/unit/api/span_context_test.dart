@@ -12,8 +12,12 @@ void main() {
     const traceFlags = api.TraceFlags.none;
     final traceState = api.TraceState.empty();
 
-    final spanContext =
-        api.SpanContext(traceId, spanId, traceFlags, traceState);
+    final spanContext = api.SpanContext(
+      traceId,
+      spanId,
+      traceFlags,
+      traceState,
+    );
 
     expect(spanContext.traceId, same(traceId));
     expect(spanContext.spanId, same(spanId));
@@ -27,8 +31,12 @@ void main() {
     const traceFlags = api.TraceFlags.sampled;
     final traceState = api.TraceState.empty();
 
-    final testSpanContext =
-        api.SpanContext(traceId, spanId, traceFlags, traceState);
+    final testSpanContext = api.SpanContext(
+      traceId,
+      spanId,
+      traceFlags,
+      traceState,
+    );
 
     expect(testSpanContext.isValid, isTrue);
     expect(testSpanContext.traceId, same(traceId));
@@ -37,22 +45,28 @@ void main() {
     expect(testSpanContext.traceState, same(traceState));
   });
 
-  test('invalid parsed parent span ID from header creates an invalid context',
-      () {
-    final spanId = api.SpanId.fromString('0000000000000000');
-    final traceId = api.TraceId([4, 5, 6]);
-    const traceFlags = api.TraceFlags.sampled;
-    final traceState = api.TraceState.empty();
+  test(
+    'invalid parsed parent span ID from header creates an invalid context',
+    () {
+      final spanId = api.SpanId.fromString('0000000000000000');
+      final traceId = api.TraceId([4, 5, 6]);
+      const traceFlags = api.TraceFlags.sampled;
+      final traceState = api.TraceState.empty();
 
-    final testSpanContext =
-        api.SpanContext(traceId, spanId, traceFlags, traceState);
+      final testSpanContext = api.SpanContext(
+        traceId,
+        spanId,
+        traceFlags,
+        traceState,
+      );
 
-    expect(testSpanContext.isValid, isFalse);
-    expect(testSpanContext.traceId, same(traceId));
-    expect(testSpanContext.spanId, same(spanId));
-    expect(testSpanContext.traceFlags, same(traceFlags));
-    expect(testSpanContext.traceState, same(traceState));
-  });
+      expect(testSpanContext.isValid, isFalse);
+      expect(testSpanContext.traceId, same(traceId));
+      expect(testSpanContext.spanId, same(spanId));
+      expect(testSpanContext.traceFlags, same(traceFlags));
+      expect(testSpanContext.traceState, same(traceState));
+    },
+  );
 
   test('invalid parsed trace ID from header creates an invalid context', () {
     final spanId = api.SpanId([1, 2, 3]);
@@ -60,8 +74,12 @@ void main() {
     const traceFlags = api.TraceFlags.sampled;
     final traceState = api.TraceState.empty();
 
-    final testSpanContext =
-        api.SpanContext(traceId, spanId, traceFlags, traceState);
+    final testSpanContext = api.SpanContext(
+      traceId,
+      spanId,
+      traceFlags,
+      traceState,
+    );
 
     expect(testSpanContext.isValid, isFalse);
     expect(testSpanContext.traceId, same(traceId));

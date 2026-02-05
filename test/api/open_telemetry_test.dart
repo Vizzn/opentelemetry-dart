@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. Please see https://github.com/Workiva/opentelemetry-dart/blob/master/LICENSE for more information
 
 @TestOn('vm')
-
 import 'package:opentelemetry/api.dart';
 import 'package:opentelemetry/sdk.dart' as sdk;
 import 'package:opentelemetry/src/sdk/trace/span.dart' as sdk show Span;
@@ -10,27 +9,33 @@ import 'package:opentelemetry/src/sdk/trace/tracer.dart' as sdk show Tracer;
 import 'package:test/test.dart';
 
 void main() {
-  final tracer = sdk.Tracer([],
-      sdk.Resource([]),
-      sdk.AlwaysOnSampler(),
-      sdk.DateTimeTimeProvider(),
-      sdk.IdGenerator(),
-      sdk.InstrumentationScope('name', 'version', 'url://schema', []),
-      sdk.SpanLimits());
+  final tracer = sdk.Tracer(
+    [],
+    sdk.Resource([]),
+    sdk.AlwaysOnSampler(),
+    sdk.DateTimeTimeProvider(),
+    sdk.IdGenerator(),
+    sdk.InstrumentationScope('name', 'version', 'url://schema', []),
+    sdk.SpanLimits(),
+  );
 
   test('trace starts and ends span', () async {
-    final span = await trace('span', () async {
-      return spanFromContext(Context.current);
-    }, tracer: tracer) as sdk.Span;
+    final span =
+        await trace('span', () async {
+              return spanFromContext(Context.current);
+            }, tracer: tracer)
+            as sdk.Span;
 
     expect(span.startTime, isNotNull);
     expect(span.endTime, isNotNull);
   });
 
   test('traceSync starts and ends span', () {
-    final span = traceSync('span', () {
-      return spanFromContext(Context.current);
-    }, tracer: tracer) as sdk.Span;
+    final span =
+        traceSync('span', () {
+              return spanFromContext(Context.current);
+            }, tracer: tracer)
+            as sdk.Span;
 
     expect(span.startTime, isNotNull);
     expect(span.endTime, isNotNull);
@@ -39,23 +44,37 @@ void main() {
   test('trace propagates context', () {
     final parent = tracer.startSpan('parent')..end();
 
-    trace('child', () async {
-      final child = spanFromContext(Context.current);
+    trace(
+      'child',
+      () async {
+        final child = spanFromContext(Context.current);
 
-      expect(child.parentSpanId.toString(),
-          equals(parent.spanContext.spanId.toString()));
-    }, tracer: tracer, context: contextWithSpan(Context.current, parent));
+        expect(
+          child.parentSpanId.toString(),
+          equals(parent.spanContext.spanId.toString()),
+        );
+      },
+      tracer: tracer,
+      context: contextWithSpan(Context.current, parent),
+    );
   });
 
   test('traceSync propagates context', () {
     final parent = tracer.startSpan('parent')..end();
 
-    traceSync('span', () {
-      final child = spanFromContext(Context.current);
+    traceSync(
+      'span',
+      () {
+        final child = spanFromContext(Context.current);
 
-      expect(child.parentSpanId.toString(),
-          equals(parent.spanContext.spanId.toString()));
-    }, tracer: tracer, context: contextWithSpan(Context.current, parent));
+        expect(
+          child.parentSpanId.toString(),
+          equals(parent.spanContext.spanId.toString()),
+        );
+      },
+      tracer: tracer,
+      context: contextWithSpan(Context.current, parent),
+    );
   });
 
   test('trace creates a root span', () async {
@@ -63,10 +82,16 @@ void main() {
     final context = contextWithSpan(Context.current, parent);
     final token = Context.attach(context);
 
-    await trace('child', () async {
-      final child = spanFromContext(Context.current);
-      expect(child.parentSpanId.isValid, isFalse);
-    }, tracer: tracer, context: context, newRoot: true);
+    await trace(
+      'child',
+      () async {
+        final child = spanFromContext(Context.current);
+        expect(child.parentSpanId.isValid, isFalse);
+      },
+      tracer: tracer,
+      context: context,
+      newRoot: true,
+    );
 
     Context.detach(token);
   });
@@ -76,10 +101,16 @@ void main() {
     final context = contextWithSpan(Context.current, parent);
     final token = Context.attach(context);
 
-    traceSync('child', () {
-      final child = spanFromContext(Context.current);
-      expect(child.parentSpanId.isValid, isFalse);
-    }, tracer: tracer, context: context, newRoot: true);
+    traceSync(
+      'child',
+      () {
+        final child = spanFromContext(Context.current);
+        expect(child.parentSpanId.isValid, isFalse);
+      },
+      tracer: tracer,
+      context: context,
+      newRoot: true,
+    );
 
     Context.detach(token);
   });
@@ -105,7 +136,7 @@ void main() {
           SemanticAttributes.exceptionMessage: 'Exception: Bang!',
           SemanticAttributes.exceptionStacktrace: anything,
           SemanticAttributes.exceptionEscaped: true,
-        })
+        }),
       ]);
     }
   });
@@ -131,7 +162,7 @@ void main() {
           SemanticAttributes.exceptionMessage: 'Exception: Bang!',
           SemanticAttributes.exceptionStacktrace: anything,
           SemanticAttributes.exceptionEscaped: true,
-        })
+        }),
       ]);
     }
   });
@@ -139,9 +170,11 @@ void main() {
 
 Matcher hasExceptionEvent(Map<String, Object> attributes) =>
     isA<SpanEvent>().having(
-        (e) => e.attributes,
+      (e) => e.attributes,
+      'attributes',
+      isA<Iterable<Attribute>>().having(
+        (a) => a.map((e) => [e.key, e.value]),
         'attributes',
-        isA<Iterable<Attribute>>().having(
-            (a) => a.map((e) => [e.key, e.value]),
-            'attributes',
-            containsAll(attributes.entries.map((e) => [e.key, e.value]))));
+        containsAll(attributes.entries.map((e) => [e.key, e.value])),
+      ),
+    );

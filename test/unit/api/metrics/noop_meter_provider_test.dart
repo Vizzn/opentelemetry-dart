@@ -17,34 +17,43 @@ void main() {
       final meter = provider.get('testname');
       meter.createCounter('test').add(1);
     });
-    test('MeterProvider.get with name+version returns inert instance of Meter',
-        () {
-      final provider = NoopMeterProvider();
-      expect(provider, isA<api.MeterProvider>());
-      final meter = provider.get('testname', version: 'version');
-      meter.createCounter('test').add(1);
-    });
+    test(
+      'MeterProvider.get with name+version returns inert instance of Meter',
+      () {
+        final provider = NoopMeterProvider();
+        expect(provider, isA<api.MeterProvider>());
+        final meter = provider.get('testname', version: 'version');
+        meter.createCounter('test').add(1);
+      },
+    );
 
     test(
-        'MeterProvider.get with name+version+url returns inert instance of Meter',
-        () {
-      final provider = NoopMeterProvider();
-      expect(provider, isA<api.MeterProvider>());
-      final meter =
-          provider.get('testname', version: 'version', schemaUrl: 'url');
-      meter.createCounter('test').add(1);
-    });
+      'MeterProvider.get with name+version+url returns inert instance of Meter',
+      () {
+        final provider = NoopMeterProvider();
+        expect(provider, isA<api.MeterProvider>());
+        final meter = provider.get(
+          'testname',
+          version: 'version',
+          schemaUrl: 'url',
+        );
+        meter.createCounter('test').add(1);
+      },
+    );
 
-    test(
-        'MeterProvider.get with name+version+url+attributes returns inert '
+    test('MeterProvider.get with name+version+url+attributes returns inert '
         'instance of Meter', () {
       final provider = NoopMeterProvider();
       expect(provider, isA<api.MeterProvider>());
-      final meter = provider
-          .get('testname', version: 'version', schemaUrl: 'url', attributes: [
-        api.Attribute.fromString('http.method', 'post'),
-        api.Attribute.fromString('http.scheme', 'http')
-      ]);
+      final meter = provider.get(
+        'testname',
+        version: 'version',
+        schemaUrl: 'url',
+        attributes: [
+          api.Attribute.fromString('http.method', 'post'),
+          api.Attribute.fromString('http.scheme', 'http'),
+        ],
+      );
       meter.createCounter<int>('test').add(1);
       meter.createCounter<double>('test2').add(0.034);
     });

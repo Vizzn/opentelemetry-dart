@@ -9,21 +9,30 @@ import 'package:test/test.dart';
 import 'package:opentelemetry/src/api/context/map_context.dart';
 
 void main() {
-  final testSpanContext = api.SpanContext(api.TraceId([1, 2, 3]),
-      api.SpanId([7, 8, 9]), api.TraceFlags.none, api.TraceState.empty());
+  final testSpanContext = api.SpanContext(
+    api.TraceId([1, 2, 3]),
+    api.SpanId([7, 8, 9]),
+    api.TraceFlags.none,
+    api.TraceState.empty(),
+  );
   final testSpan = Span(
-      'foo',
-      testSpanContext,
-      api.SpanId([4, 5, 6]),
+    'foo',
+    testSpanContext,
+    api.SpanId([4, 5, 6]),
+    [],
+    sdk.DateTimeTimeProvider(),
+    sdk.Resource([]),
+    sdk.InstrumentationScope(
+      'library_name',
+      'library_version',
+      'url://schema',
       [],
-      sdk.DateTimeTimeProvider(),
-      sdk.Resource([]),
-      sdk.InstrumentationScope(
-          'library_name', 'library_version', 'url://schema', []),
-      api.SpanKind.client,
-      [],
-      sdk.SpanLimits(),
-      sdk.DateTimeTimeProvider().now);
+    ),
+    api.SpanKind.client,
+    [],
+    sdk.SpanLimits(),
+    sdk.DateTimeTimeProvider().now,
+  );
   group('MapContext', () {
     test('getValue returns null if key is not set', () {
       final context = createMapContext();

@@ -11,14 +11,19 @@ import 'package:test/test.dart';
 void main() {
   test('startSpan new trace', () {
     final tracer = Tracer(
+      [],
+      sdk.Resource([]),
+      sdk.AlwaysOnSampler(),
+      sdk.DateTimeTimeProvider(),
+      sdk.IdGenerator(),
+      sdk.InstrumentationScope(
+        'library_name',
+        'library_version',
+        'url://schema',
         [],
-        sdk.Resource([]),
-        sdk.AlwaysOnSampler(),
-        sdk.DateTimeTimeProvider(),
-        sdk.IdGenerator(),
-        sdk.InstrumentationScope(
-            'library_name', 'library_version', 'url://schema', []),
-        sdk.SpanLimits());
+      ),
+      sdk.SpanLimits(),
+    );
 
     final span = tracer.startSpan('foo') as Span;
 
@@ -30,14 +35,19 @@ void main() {
 
   test('startSpan child span', () {
     final tracer = Tracer(
+      [],
+      sdk.Resource([]),
+      sdk.AlwaysOnSampler(),
+      sdk.DateTimeTimeProvider(),
+      sdk.IdGenerator(),
+      sdk.InstrumentationScope(
+        'library_name',
+        'library_version',
+        'url://schema',
         [],
-        sdk.Resource([]),
-        sdk.AlwaysOnSampler(),
-        sdk.DateTimeTimeProvider(),
-        sdk.IdGenerator(),
-        sdk.InstrumentationScope(
-            'library_name', 'library_version', 'url://schema', []),
-        sdk.SpanLimits());
+      ),
+      sdk.SpanLimits(),
+    );
 
     final parentSpan = tracer.startSpan('foo');
     final context = api.contextWithSpan(api.Context.current, parentSpan);
@@ -47,10 +57,16 @@ void main() {
     expect(childSpan.startTime, isNotNull);
     expect(childSpan.endTime, isNull);
     expect(
-        childSpan.spanContext.traceId, equals(parentSpan.spanContext.traceId));
-    expect(childSpan.spanContext.traceState,
-        equals(parentSpan.spanContext.traceState));
-    expect(childSpan.spanContext.spanId,
-        allOf([isNotNull, isNot(equals(parentSpan.spanContext.spanId))]));
+      childSpan.spanContext.traceId,
+      equals(parentSpan.spanContext.traceId),
+    );
+    expect(
+      childSpan.spanContext.traceState,
+      equals(parentSpan.spanContext.traceState),
+    );
+    expect(
+      childSpan.spanContext.spanId,
+      allOf([isNotNull, isNot(equals(parentSpan.spanContext.spanId))]),
+    );
   });
 }

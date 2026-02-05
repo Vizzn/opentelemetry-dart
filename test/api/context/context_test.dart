@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. Please see https://github.com/Workiva/opentelemetry-dart/blob/master/LICENSE for more information
 
 @TestOn('vm')
-
 import 'dart:async';
 
 import 'package:opentelemetry/api.dart' as api;
@@ -12,21 +11,30 @@ import 'package:opentelemetry/src/sdk/trace/span.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final testSpanContext = api.SpanContext(api.TraceId([1, 2, 3]),
-      api.SpanId([7, 8, 9]), api.TraceFlags.none, api.TraceState.empty());
+  final testSpanContext = api.SpanContext(
+    api.TraceId([1, 2, 3]),
+    api.SpanId([7, 8, 9]),
+    api.TraceFlags.none,
+    api.TraceState.empty(),
+  );
   final testSpan = Span(
-      'foo',
-      testSpanContext,
-      api.SpanId([4, 5, 6]),
+    'foo',
+    testSpanContext,
+    api.SpanId([4, 5, 6]),
+    [],
+    sdk.DateTimeTimeProvider(),
+    sdk.Resource([]),
+    sdk.InstrumentationScope(
+      'library_name',
+      'library_version',
+      'url://schema',
       [],
-      sdk.DateTimeTimeProvider(),
-      sdk.Resource([]),
-      sdk.InstrumentationScope(
-          'library_name', 'library_version', 'url://schema', []),
-      api.SpanKind.client,
-      [],
-      sdk.SpanLimits(),
-      sdk.DateTimeTimeProvider().now);
+    ),
+    api.SpanKind.client,
+    [],
+    sdk.SpanLimits(),
+    sdk.DateTimeTimeProvider().now,
+  );
 
   group('contextWithSpan', () {
     test('returns a new Context with the Span', () {
@@ -38,8 +46,10 @@ void main() {
 
   group('contextWithSpanContext', () {
     test('returns a new Context with the SpanContext', () {
-      final context =
-          api.contextWithSpanContext(api.Context.current, testSpanContext);
+      final context = api.contextWithSpanContext(
+        api.Context.current,
+        testSpanContext,
+      );
       expect(api.Context.current, isNot(same(context)));
       expect(api.spanContextFromContext(context), same(testSpanContext));
     });

@@ -29,35 +29,39 @@ class TracerProviderBase implements api.TracerProvider {
 
   final sdk.TimeProvider _timeProvider;
 
-  TracerProviderBase(
-      {this.processors =
-          const [], // Default to a TracerProvider which does not emit traces.
-      resource,
-      sdk.TimeProvider? timeProvider,
-      this.sampler = const sdk.ParentBasedSampler(sdk.AlwaysOnSampler()),
-      this.idGenerator = const sdk.IdGenerator(),
-      this.spanLimits = const sdk.SpanLimits()})
-      : resource = resource ?? sdk.Resource([]),
-        _timeProvider = timeProvider ?? sdk.DateTimeTimeProvider();
+  TracerProviderBase({
+    this.processors =
+        const [], // Default to a TracerProvider which does not emit traces.
+    resource,
+    sdk.TimeProvider? timeProvider,
+    this.sampler = const sdk.ParentBasedSampler(sdk.AlwaysOnSampler()),
+    this.idGenerator = const sdk.IdGenerator(),
+    this.spanLimits = const sdk.SpanLimits(),
+  }) : resource = resource ?? sdk.Resource([]),
+       _timeProvider = timeProvider ?? sdk.DateTimeTimeProvider();
 
   List<sdk.SpanProcessor> get spanProcessors => processors;
 
   @override
-  api.Tracer getTracer(String name,
-      {String version = '',
-      String schemaUrl = '',
-      List<api.Attribute> attributes = const []}) {
+  api.Tracer getTracer(
+    String name, {
+    String version = '',
+    String schemaUrl = '',
+    List<api.Attribute> attributes = const [],
+  }) {
     final key = '$name@$version';
     return tracers.putIfAbsent(
-        key,
-        () => Tracer(
-            processors,
-            resource,
-            sampler,
-            _timeProvider,
-            idGenerator,
-            sdk.InstrumentationScope(name, version, schemaUrl, attributes),
-            spanLimits));
+      key,
+      () => Tracer(
+        processors,
+        resource,
+        sampler,
+        _timeProvider,
+        idGenerator,
+        sdk.InstrumentationScope(name, version, schemaUrl, attributes),
+        spanLimits,
+      ),
+    );
   }
 
   @override
