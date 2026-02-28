@@ -13,5 +13,8 @@ abstract class TextMapPropagator<C> {
   void inject(api.Context context, C carrier, api.TextMapSetter<C> setter);
 
   api.Context extract(
-      api.Context context, C carrier, api.TextMapGetter<C> getter);
+    api.Context context,
+    C carrier,
+    api.TextMapGetter<C> getter,
+  );
 }

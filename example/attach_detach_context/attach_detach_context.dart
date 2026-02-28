@@ -7,13 +7,15 @@ import 'package:opentelemetry/sdk.dart'
 
 void main() {
   final tp = TracerProviderBase(
-          processors: [SimpleSpanProcessor(ConsoleExporter())]),
+        processors: [SimpleSpanProcessor(ConsoleExporter())],
+      ),
       tracer = tp.getTracer('instrumentation-name');
 
   // Attach the root span to the current context (the root context) making the
   // span the current span until it is detached.
   final rootToken = Context.attach(
-      contextWithSpan(Context.current, tracer.startSpan('root-1')..end()));
+    contextWithSpan(Context.current, tracer.startSpan('root-1')..end()),
+  );
 
   // Starting a child span will automatically parent the span to the span held
   // by the attached context.

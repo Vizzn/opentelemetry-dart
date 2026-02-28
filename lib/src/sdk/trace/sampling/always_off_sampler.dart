@@ -12,13 +12,17 @@ class AlwaysOffSampler implements sdk.Sampler {
 
   @override
   sdk.SamplingResult shouldSample(
-      api.Context context,
-      api.TraceId traceId,
-      String spanName,
-      api.SpanKind spanKind,
-      List<api.Attribute> spanAttributes,
-      List<api.SpanLink> links) {
-    return sdk.SamplingResult(sdk.Decision.drop, spanAttributes,
-        api.spanContextFromContext(context).traceState);
+    api.Context context,
+    api.TraceId traceId,
+    String spanName,
+    api.SpanKind spanKind,
+    List<api.Attribute> spanAttributes,
+    List<api.SpanLink> links,
+  ) {
+    return sdk.SamplingResult(
+      sdk.Decision.drop,
+      spanAttributes,
+      api.spanContextFromContext(context).traceState,
+    );
   }
 }

@@ -1,10 +1,9 @@
 // Copyright 2021-2022 Workiva.
 // Licensed under the Apache License, Version 2.0. Please see https://github.com/Workiva/opentelemetry-dart/blob/master/LICENSE for more information
 
-import 'dart:html';
-
 import 'package:fixnum/fixnum.dart';
 import 'package:meta/meta.dart';
+import 'package:web/web.dart';
 
 import '../../../time_providers/time_provider.dart';
 
@@ -24,8 +23,9 @@ Int64 msToNs(num n, {int? fractionDigits}) {
 /// nanoseconds.
 @experimental
 final Int64 timeOrigin = msToNs(
-    window.performance.timeOrigin ?? window.performance.timing.navigationStart,
-    fractionDigits: 1);
+  window.performance.timeOrigin,
+  fractionDigits: 1,
+);
 
 /// Converts a high-resolution timestamp from the browser performance API to an
 /// Int64 representing nanoseconds since Unix Epoch.

@@ -17,7 +17,8 @@ class MyEvent with EventContext {
 
 void main() async {
   final tp = TracerProviderBase(
-          processors: [SimpleSpanProcessor(ConsoleExporter())]),
+        processors: [SimpleSpanProcessor(ConsoleExporter())],
+      ),
       tracer = tp.getTracer('instrumentation-name');
 
   final controller = StreamController<MyEvent>();

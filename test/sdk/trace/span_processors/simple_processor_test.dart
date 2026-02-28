@@ -28,37 +28,45 @@ class TestSpanExporter extends SpanExporter {
 }
 
 void main() {
-  final sampledSpanContext = SpanContext(TraceId([1, 2, 3]), SpanId([7, 8, 9]),
-      TraceFlags.sampled, TraceState.empty());
+  final sampledSpanContext = SpanContext(
+    TraceId([1, 2, 3]),
+    SpanId([7, 8, 9]),
+    TraceFlags.sampled,
+    TraceState.empty(),
+  );
   final sampledSpan = Span(
-      'foo',
-      sampledSpanContext,
-      SpanId([4, 5, 6]),
-      [],
-      DateTimeTimeProvider(),
-      Resource([]),
-      InstrumentationScope(
-          'library_name', 'library_version', 'url://schema', []),
-      SpanKind.client,
-      [],
-      SpanLimits(),
-      DateTimeTimeProvider().now);
+    'foo',
+    sampledSpanContext,
+    SpanId([4, 5, 6]),
+    [],
+    DateTimeTimeProvider(),
+    Resource([]),
+    InstrumentationScope('library_name', 'library_version', 'url://schema', []),
+    SpanKind.client,
+    [],
+    SpanLimits(),
+    DateTimeTimeProvider().now,
+  );
 
-  final unsampledSpanContext = SpanContext(TraceId([1, 2, 3]),
-      SpanId([7, 8, 9]), TraceFlags.none, TraceState.empty());
+  final unsampledSpanContext = SpanContext(
+    TraceId([1, 2, 3]),
+    SpanId([7, 8, 9]),
+    TraceFlags.none,
+    TraceState.empty(),
+  );
   final unsampledSpan = Span(
-      'foo',
-      unsampledSpanContext,
-      SpanId([4, 5, 6]),
-      [],
-      DateTimeTimeProvider(),
-      Resource([]),
-      InstrumentationScope(
-          'library_name', 'library_version', 'url://schema', []),
-      SpanKind.client,
-      [],
-      SpanLimits(),
-      DateTimeTimeProvider().now);
+    'foo',
+    unsampledSpanContext,
+    SpanId([4, 5, 6]),
+    [],
+    DateTimeTimeProvider(),
+    Resource([]),
+    InstrumentationScope('library_name', 'library_version', 'url://schema', []),
+    SpanKind.client,
+    [],
+    SpanLimits(),
+    DateTimeTimeProvider().now,
+  );
 
   late TestSpanExporter exporter;
   late SimpleSpanProcessor processor;

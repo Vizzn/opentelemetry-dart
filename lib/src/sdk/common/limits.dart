@@ -8,7 +8,9 @@ import '../../../sdk.dart' as sdk;
 /// Applies given [sdk.SpanLimits] to a list of [api.SpanLink]s.
 @protected
 List<api.SpanLink> applyLinkLimits(
-    List<api.SpanLink> links, sdk.SpanLimits limits) {
+  List<api.SpanLink> links,
+  sdk.SpanLimits limits,
+) {
   final spanLink = <api.SpanLink>[];
 
   for (final link in links) {
@@ -49,8 +51,13 @@ List<api.SpanLink> applyLinkLimits(
       }
     }
 
-    spanLink.add(api.SpanLink(link.context,
-        attributes: linkAttributes, droppedAttributes: droppedAttributes));
+    spanLink.add(
+      api.SpanLink(
+        link.context,
+        attributes: linkAttributes,
+        droppedAttributes: droppedAttributes,
+      ),
+    );
   }
   return spanLink;
 }
@@ -63,14 +70,19 @@ api.Attribute applyAttributeLimits(api.Attribute attr, sdk.SpanLimits limits) {
 
   if (attr.value is String) {
     attr = api.Attribute.fromString(
-        attr.key,
-        applyAttributeLengthLimit(
-            attr.value as String, limits.maxNumAttributeLength));
+      attr.key,
+      applyAttributeLengthLimit(
+        attr.value as String,
+        limits.maxNumAttributeLength,
+      ),
+    );
   } else if (attr.value is List<String>) {
     final listString = attr.value as List<String>;
     for (var j = 0; j < listString.length; j++) {
       listString[j] = applyAttributeLengthLimit(
-          listString[j], limits.maxNumAttributeLength);
+        listString[j],
+        limits.maxNumAttributeLength,
+      );
     }
     attr = api.Attribute.fromStringList(attr.key, listString);
   }

@@ -10,19 +10,28 @@ import 'package:test/test.dart';
 void main() {
   test('span change name', () {
     final span = Span(
-        'foo',
-        api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([7, 8, 9]),
-            api.TraceFlags.none, api.TraceState.empty()),
-        api.SpanId([4, 5, 6]),
+      'foo',
+      api.SpanContext(
+        api.TraceId([1, 2, 3]),
+        api.SpanId([7, 8, 9]),
+        api.TraceFlags.none,
+        api.TraceState.empty(),
+      ),
+      api.SpanId([4, 5, 6]),
+      [],
+      sdk.DateTimeTimeProvider(),
+      sdk.Resource([api.Attribute.fromString('service-name', 'foo')]),
+      sdk.InstrumentationScope(
+        'library_name',
+        'library_version',
+        'url://schema',
         [],
-        sdk.DateTimeTimeProvider(),
-        sdk.Resource([api.Attribute.fromString('service-name', 'foo')]),
-        sdk.InstrumentationScope(
-            'library_name', 'library_version', 'url://schema', []),
-        api.SpanKind.internal,
-        [],
-        sdk.SpanLimits(),
-        sdk.DateTimeTimeProvider().now);
+      ),
+      api.SpanKind.internal,
+      [],
+      sdk.SpanLimits(),
+      sdk.DateTimeTimeProvider().now,
+    );
     expect(span.name, equals('foo'));
 
     span.setName('bar');

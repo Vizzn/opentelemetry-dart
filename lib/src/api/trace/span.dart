@@ -19,7 +19,7 @@ enum SpanKind {
   consumer,
 
   /// An internal operation within an application, as opposed to an operation with remote parents or children.
-  internal
+  internal,
 }
 
 /// A representation of a single operation within a trace.
@@ -60,13 +60,20 @@ abstract class Span {
   void setAttributes(List<api.Attribute> attributes);
 
   /// Records a [api.SpanEvent].
-  void addEvent(String name,
-      {Int64? timestamp, List<api.Attribute> attributes});
+  void addEvent(
+    String name, {
+    Int64? timestamp,
+    List<api.Attribute> attributes,
+  });
 
   /// Marks the end of this span's execution.
   void end({Int64 endTime});
 
   /// Record metadata about an exception occurring during this span.
-  void recordException(dynamic exception,
-      {bool escaped, StackTrace stackTrace, List<api.Attribute> attributes});
+  void recordException(
+    dynamic exception, {
+    bool escaped,
+    StackTrace stackTrace,
+    List<api.Attribute> attributes,
+  });
 }

@@ -47,18 +47,18 @@ class Span implements sdk.ReadWriteSpan {
   /// Construct a [Span].
   @protected
   Span(
-      this._name,
-      this._spanContext,
-      this._parentSpanId,
-      this._processors,
-      this._timeProvider,
-      this._resource,
-      this._instrumentationScope,
-      this._kind,
-      List<SpanLink> links,
-      this._limits,
-      this._startTime)
-      : _links = applyLinkLimits(links, _limits) {
+    this._name,
+    this._spanContext,
+    this._parentSpanId,
+    this._processors,
+    this._timeProvider,
+    this._resource,
+    this._instrumentationScope,
+    this._kind,
+    List<SpanLink> links,
+    this._limits,
+    this._startTime,
+  ) : _links = applyLinkLimits(links, _limits) {
     _droppedSpanLinks = links.length - _links.length;
   }
 
@@ -142,28 +142,42 @@ class Span implements sdk.ReadWriteSpan {
   }
 
   @override
-  void recordException(dynamic exception,
-      {bool escaped = true,
-      StackTrace stackTrace = StackTrace.empty,
-      List<api.Attribute> attributes = const []}) {
-    addEvent('exception', attributes: [
-      Attribute.fromString(api.SemanticAttributes.exceptionType,
-          exception.runtimeType.toString()),
-      Attribute.fromString(
-          api.SemanticAttributes.exceptionMessage, exception.toString()),
-      Attribute.fromString(
-          api.SemanticAttributes.exceptionStacktrace, stackTrace.toString()),
-      Attribute.fromBoolean(api.SemanticAttributes.exceptionEscaped, escaped),
-      ...attributes
-    ]);
+  void recordException(
+    dynamic exception, {
+    bool escaped = true,
+    StackTrace stackTrace = StackTrace.empty,
+    List<api.Attribute> attributes = const [],
+  }) {
+    addEvent(
+      'exception',
+      attributes: [
+        Attribute.fromString(
+          api.SemanticAttributes.exceptionType,
+          exception.runtimeType.toString(),
+        ),
+        Attribute.fromString(
+          api.SemanticAttributes.exceptionMessage,
+          exception.toString(),
+        ),
+        Attribute.fromString(
+          api.SemanticAttributes.exceptionStacktrace,
+          stackTrace.toString(),
+        ),
+        Attribute.fromBoolean(api.SemanticAttributes.exceptionEscaped, escaped),
+        ...attributes,
+      ],
+    );
   }
 
   @override
   api.SpanKind get kind => _kind;
 
   @override
-  void addEvent(String name,
-      {Int64? timestamp, List<api.Attribute> attributes = const []}) {
+  void addEvent(
+    String name, {
+    Int64? timestamp,
+    List<api.Attribute> attributes = const [],
+  }) {
     timestamp ??= _timeProvider.now;
 
     // Don't want to have any events
@@ -186,17 +200,21 @@ class Span implements sdk.ReadWriteSpan {
           obj == null) {
         droppedEventAttributes++;
       } else {
-        filteredAttributes[attribute.key] =
-            applyAttributeLimits(attribute, _limits);
+        filteredAttributes[attribute.key] = applyAttributeLimits(
+          attribute,
+          _limits,
+        );
       }
     }
 
-    _events.add(api.SpanEvent(
-      timestamp: timestamp,
-      name: name,
-      attributes: filteredAttributes.values,
-      droppedAttributesCount: droppedEventAttributes,
-    ));
+    _events.add(
+      api.SpanEvent(
+        timestamp: timestamp,
+        name: name,
+        attributes: filteredAttributes.values,
+        droppedAttributesCount: droppedEventAttributes,
+      ),
+    );
   }
 
   @override

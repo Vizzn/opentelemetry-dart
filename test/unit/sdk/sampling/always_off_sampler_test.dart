@@ -12,23 +12,38 @@ void main() {
     final traceId = api.TraceId([1, 2, 3]);
     final traceState = api.TraceState.fromString('test=one,two');
     final testSpan = Span(
-        'foo',
-        api.SpanContext(
-            traceId, api.SpanId([7, 8, 9]), api.TraceFlags.none, traceState),
-        api.SpanId([4, 5, 6]),
+      'foo',
+      api.SpanContext(
+        traceId,
+        api.SpanId([7, 8, 9]),
+        api.TraceFlags.none,
+        traceState,
+      ),
+      api.SpanId([4, 5, 6]),
+      [],
+      sdk.DateTimeTimeProvider(),
+      sdk.Resource([]),
+      sdk.InstrumentationScope(
+        'library_name',
+        'library_version',
+        'url://schema',
         [],
-        sdk.DateTimeTimeProvider(),
-        sdk.Resource([]),
-        sdk.InstrumentationScope(
-            'library_name', 'library_version', 'url://schema', []),
-        api.SpanKind.internal,
-        [],
-        sdk.SpanLimits(),
-        sdk.DateTimeTimeProvider().now);
+      ),
+      api.SpanKind.internal,
+      [],
+      sdk.SpanLimits(),
+      sdk.DateTimeTimeProvider().now,
+    );
     final testContext = api.contextWithSpan(api.Context.current, testSpan);
 
     final result = sdk.AlwaysOffSampler().shouldSample(
-        testContext, traceId, testSpan.name, api.SpanKind.internal, [], []);
+      testContext,
+      traceId,
+      testSpan.name,
+      api.SpanKind.internal,
+      [],
+      [],
+    );
 
     expect(result.decision, equals(sdk.Decision.drop));
     expect(result.spanAttributes, equals([]));
@@ -38,26 +53,40 @@ void main() {
     final traceId = api.TraceId([1, 2, 3]);
     final attributesList = [
       api.Attribute.fromBoolean('boolTest', true),
-      api.Attribute.fromDouble('double', 0.3)
+      api.Attribute.fromDouble('double', 0.3),
     ];
     final testSpan = Span(
-        'foo',
-        api.SpanContext(traceId, api.SpanId([7, 8, 9]), api.TraceFlags.none,
-            api.TraceState.empty()),
-        api.SpanId([4, 5, 6]),
+      'foo',
+      api.SpanContext(
+        traceId,
+        api.SpanId([7, 8, 9]),
+        api.TraceFlags.none,
+        api.TraceState.empty(),
+      ),
+      api.SpanId([4, 5, 6]),
+      [],
+      sdk.DateTimeTimeProvider(),
+      sdk.Resource([]),
+      sdk.InstrumentationScope(
+        'library_name',
+        'library_version',
+        'url://schema',
         [],
-        sdk.DateTimeTimeProvider(),
-        sdk.Resource([]),
-        sdk.InstrumentationScope(
-            'library_name', 'library_version', 'url://schema', []),
-        api.SpanKind.internal,
-        [],
-        sdk.SpanLimits(),
-        sdk.DateTimeTimeProvider().now)
-      ..setAttributes(attributesList);
+      ),
+      api.SpanKind.internal,
+      [],
+      sdk.SpanLimits(),
+      sdk.DateTimeTimeProvider().now,
+    )..setAttributes(attributesList);
 
-    final result = sdk.AlwaysOffSampler().shouldSample(api.Context.current,
-        traceId, testSpan.name, api.SpanKind.internal, attributesList, []);
+    final result = sdk.AlwaysOffSampler().shouldSample(
+      api.Context.current,
+      traceId,
+      testSpan.name,
+      api.SpanKind.internal,
+      attributesList,
+      [],
+    );
 
     expect(result.decision, equals(sdk.Decision.drop));
     expect(result.spanAttributes, attributesList);

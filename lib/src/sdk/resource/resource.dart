@@ -8,7 +8,7 @@ class Resource {
   final Attributes _attributes;
 
   Resource(List<api.Attribute> attributes)
-      : _attributes = Attributes.empty()..addAll(attributes);
+    : _attributes = Attributes.empty()..addAll(attributes);
 
   Attributes get attributes => _attributes;
 }

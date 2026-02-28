@@ -18,12 +18,13 @@ void main() {
     final fooWithVersionTracer = provider.getTracer('foo', version: '1.0');
 
     expect(
-        fooTracer,
-        allOf([
-          isNot(barTracer),
-          isNot(fooWithVersionTracer),
-          same(provider.getTracer('foo'))
-        ]));
+      fooTracer,
+      allOf([
+        isNot(barTracer),
+        isNot(fooWithVersionTracer),
+        same(provider.getTracer('foo')),
+      ]),
+    );
 
     expect(provider.spanProcessors, isA<List<SpanProcessor>>());
   });
@@ -31,8 +32,9 @@ void main() {
   test('browserTracerProvider custom span processors', () {
     final mockProcessor1 = MockSpanProcessor();
     final mockProcessor2 = MockSpanProcessor();
-    final provider =
-        WebTracerProvider(processors: [mockProcessor1, mockProcessor2]);
+    final provider = WebTracerProvider(
+      processors: [mockProcessor1, mockProcessor2],
+    );
 
     expect(provider.spanProcessors, [mockProcessor1, mockProcessor2]);
   });
@@ -40,8 +42,9 @@ void main() {
   test('browserTracerProvider force flushes all processors', () {
     final mockProcessor1 = MockSpanProcessor();
     final mockProcessor2 = MockSpanProcessor();
-    WebTracerProvider(processors: [mockProcessor1, mockProcessor2])
-        .forceFlush();
+    WebTracerProvider(
+      processors: [mockProcessor1, mockProcessor2],
+    ).forceFlush();
 
     verify(mockProcessor1.forceFlush).called(1);
     verify(mockProcessor2.forceFlush).called(1);
@@ -56,14 +59,18 @@ void main() {
     verify(mockProcessor2.shutdown).called(1);
   });
 
-  test('browserTracerProvider creates a tracer which can create valid spans',
-      () async {
-    final span = WebTracerProvider(processors: [MockSpanProcessor()])
-        .getTracer('testTracer')
-        .startSpan('testSpan') as Span
-      ..end();
+  test(
+    'browserTracerProvider creates a tracer which can create valid spans',
+    () async {
+      final span =
+          WebTracerProvider(
+                  processors: [MockSpanProcessor()],
+                ).getTracer('testTracer').startSpan('testSpan')
+                as Span
+            ..end();
 
-    expect(span.endTime, isNotNull);
-    expect(span.startTime, lessThanOrEqualTo(span.endTime!));
-  });
+      expect(span.endTime, isNotNull);
+      expect(span.startTime, lessThanOrEqualTo(span.endTime!));
+    },
+  );
 }

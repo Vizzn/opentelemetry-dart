@@ -14,23 +14,28 @@ class W3CTraceContextPropagator implements api.TextMapPropagator {
 
   // See https://www.w3.org/TR/trace-context/#traceparent-header-field-values
   // for trace parent header specification.
-  static final RegExp traceParentHeaderRegEx =
-      RegExp('^(?<$_traceVersionFieldKey>[0-9a-f]{2})-'
-          '(?<$_traceIdFieldKey>[0-9a-f]{${api.TraceId.sizeBits}})-'
-          '(?<$_parentIdFieldKey>[0-9a-f]{${api.SpanId.sizeBits}})-'
-          '(?<$_traceFlagsFieldKey>[0-9a-f]{${2}})\$');
+  static final RegExp traceParentHeaderRegEx = RegExp(
+    '^(?<$_traceVersionFieldKey>[0-9a-f]{2})-'
+    '(?<$_traceIdFieldKey>[0-9a-f]{${api.TraceId.sizeBits}})-'
+    '(?<$_parentIdFieldKey>[0-9a-f]{${api.SpanId.sizeBits}})-'
+    '(?<$_traceFlagsFieldKey>[0-9a-f]{${2}})\$',
+  );
 
   @override
   api.Context extract(
-      api.Context context, dynamic carrier, api.TextMapGetter getter) {
+    api.Context context,
+    dynamic carrier,
+    api.TextMapGetter getter,
+  ) {
     final traceParentHeader = getter.get(carrier, _traceParentHeaderKey);
     if (traceParentHeader == null) {
       // Carrier did not contain a trace header.  Do nothing.
       return context;
     }
 
-    final parentHeaderMatch =
-        traceParentHeaderRegEx.firstMatch(traceParentHeader);
+    final parentHeaderMatch = traceParentHeaderRegEx.firstMatch(
+      traceParentHeader,
+    );
 
     if (parentHeaderMatch == null) {
       // Encountered a malformed or unknown trace header.  Do nothing.
@@ -38,9 +43,10 @@ class W3CTraceContextPropagator implements api.TextMapPropagator {
     }
 
     final parentHeaderFields = Map<String, String>.fromIterable(
-        parentHeaderMatch.groupNames,
-        key: (element) => element.toString(),
-        value: (element) => parentHeaderMatch.namedGroup(element)!);
+      parentHeaderMatch.groupNames,
+      key: (element) => element.toString(),
+      value: (element) => parentHeaderMatch.namedGroup(element)!,
+    );
 
     final traceIdHeader = parentHeaderFields[_traceIdFieldKey];
     final traceId = (traceIdHeader != null)
@@ -60,9 +66,11 @@ class W3CTraceContextPropagator implements api.TextMapPropagator {
         : api.TraceState.empty();
 
     return api.contextWithSpan(
-        context,
-        NonRecordingSpan(
-            api.SpanContext.remote(traceId, parentId, traceFlags, traceState)));
+      context,
+      NonRecordingSpan(
+        api.SpanContext.remote(traceId, parentId, traceFlags, traceState),
+      ),
+    );
   }
 
   @override
@@ -71,11 +79,12 @@ class W3CTraceContextPropagator implements api.TextMapPropagator {
 
     setter
       ..set(
-          carrier,
-          _traceParentHeaderKey,
-          '$_traceVersion-${spanContext.traceId.toString()}-'
-          '${spanContext.spanId.toString()}-'
-          '${spanContext.traceFlags.toRadixString(16).padLeft(2, '0')}')
+        carrier,
+        _traceParentHeaderKey,
+        '$_traceVersion-${spanContext.traceId.toString()}-'
+        '${spanContext.spanId.toString()}-'
+        '${spanContext.traceFlags.toRadixString(16).padLeft(2, '0')}',
+      )
       ..set(carrier, _traceStateHeaderKey, spanContext.traceState.toString());
   }
 }

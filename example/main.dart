@@ -41,10 +41,15 @@ void main() async {
 
   // The [traceContext] and [traceContextSync] functions will automatically
   // propagate context, capture errors, and end the span.
-  await traceContext('child-span', (_) {
-    tracer.startSpan('grandchild-span').end();
-    return Future.delayed(Duration(milliseconds: 100));
-  }, context: context, tracer: tracer);
+  await traceContext(
+    'child-span',
+    (_) {
+      tracer.startSpan('grandchild-span').end();
+      return Future.delayed(Duration(milliseconds: 100));
+    },
+    context: context,
+    tracer: tracer,
+  );
 
   // Spans must be ended or they will not be exported.
   parentSpan.end();

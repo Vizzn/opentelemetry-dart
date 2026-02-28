@@ -41,20 +41,25 @@ void main() {
     expect(testTraceState.get('key_0-1'), equals('value@2'));
     expect(testTraceState.get('key_0-2'), equals('value@1'));
     expect(testTraceState.get('key_@vendor'), equals('value@3'));
-    expect(testTraceState.toString(),
-        equals('key_0-1=value@2,key_0-2=value@1,key_@vendor=value@3'));
+    expect(
+      testTraceState.toString(),
+      equals('key_0-1=value@2,key_0-2=value@1,key_@vendor=value@3'),
+    );
     expect(testTraceState.isEmpty, isFalse);
     expect(testTraceState.size, equals(3));
   });
 
   test('create from string with invalid values', () {
     final testTraceState = TraceState.fromString(
-        'key_0-1=0,value2,key&0-2=value@1,key_@thisisalotlongerthan13characters=value@3');
+      'key_0-1=0,value2,key&0-2=value@1,key_@thisisalotlongerthan13characters=value@3',
+    );
 
     expect(testTraceState.get('key_0-1'), isEmpty); // Invalid value, comma.
     expect(testTraceState.get('key&0-2'), isEmpty); // Invalid key.
-    expect(testTraceState.get('key_@thisisalotlongerthan13characters'),
-        isEmpty); // Invalid vendor key.
+    expect(
+      testTraceState.get('key_@thisisalotlongerthan13characters'),
+      isEmpty,
+    ); // Invalid vendor key.
     expect(testTraceState.toString(), equals(''));
     expect(testTraceState.isEmpty, isTrue);
     expect(testTraceState.size, equals(0));
@@ -64,13 +69,17 @@ void main() {
     final testTraceState = TraceState.empty()
       ..put('key_0-1', '0,value=2') // Invalid value.
       ..put('key&0-2', 'value@1') // Invalid key.
-      ..put('key_@thisisalotlongerthan13characters',
-          'value@3'); // Invalid vendor key.
+      ..put(
+        'key_@thisisalotlongerthan13characters',
+        'value@3',
+      ); // Invalid vendor key.
 
     expect(testTraceState.get('key_0-1'), isEmpty);
     expect(testTraceState.get('key_0-2'), isEmpty);
     expect(
-        testTraceState.get('key_@thisisalotlongerthan13characters'), isEmpty);
+      testTraceState.get('key_@thisisalotlongerthan13characters'),
+      isEmpty,
+    );
     expect(testTraceState.toString(), equals(''));
     expect(testTraceState.isEmpty, isTrue);
     expect(testTraceState.size, equals(0));
@@ -87,7 +96,9 @@ void main() {
     expect(testTraceState.get('key_0-2'), equals('value@1'));
     expect(testTraceState.get('key_@vendor'), isEmpty);
     expect(
-        testTraceState.toString(), equals('key_0-1=value@2,key_0-2=value@1'));
+      testTraceState.toString(),
+      equals('key_0-1=value@2,key_0-2=value@1'),
+    );
     expect(testTraceState.isEmpty, isFalse);
     expect(testTraceState.size, equals(2));
   });
@@ -120,8 +131,9 @@ void main() {
   });
 
   test('key regex, invalid vendor key', () {
-    final matchResult = TraceState.validKeyRegex
-        .matchAsPrefix('key_@thisisalotlongerthan13characters');
+    final matchResult = TraceState.validKeyRegex.matchAsPrefix(
+      'key_@thisisalotlongerthan13characters',
+    );
 
     expect(matchResult, isNull);
   });

@@ -23,26 +23,35 @@ import 'package:opentelemetry/sdk.dart'
         SimpleSpanProcessor,
         TracerProviderBase;
 
-final Attribute samplingOffAttribute =
-    Attribute.fromInt('sampling.priority', 0);
+final Attribute samplingOffAttribute = Attribute.fromInt(
+  'sampling.priority',
+  0,
+);
 
 class SpanSamplingPrioritySampler implements Sampler {
   @override
   SamplingResult shouldSample(
-      Context parentContext,
-      TraceId traceId,
-      String name,
-      SpanKind spanKind,
-      List<Attribute> attributes,
-      List<SpanLink> links) {
-    final decision = attributes.firstWhereOrNull((element) =>
-                element.key == 'sampling.priority' && element.value == 0) !=
+    Context parentContext,
+    TraceId traceId,
+    String name,
+    SpanKind spanKind,
+    List<Attribute> attributes,
+    List<SpanLink> links,
+  ) {
+    final decision =
+        attributes.firstWhereOrNull(
+              (element) =>
+                  element.key == 'sampling.priority' && element.value == 0,
+            ) !=
             null
         ? Decision.recordOnly
         : Decision.recordAndSample;
 
     return SamplingResult(
-        decision, attributes, spanContextFromContext(parentContext).traceState);
+      decision,
+      attributes,
+      spanContextFromContext(parentContext).traceState,
+    );
   }
 
   @override
@@ -77,14 +86,16 @@ class PrintingSpanProcessor extends SimpleSpanProcessor {
 void main(List<String> args) async {
   final sampler = ParentBasedSampler(SpanSamplingPrioritySampler());
   final tp = TracerProviderBase(
-      processors: [PrintingSpanProcessor(ConsoleExporter())], sampler: sampler);
+    processors: [PrintingSpanProcessor(ConsoleExporter())],
+    sampler: sampler,
+  );
   registerGlobalTracerProvider(tp);
 
   final tracer = tp.getTracer('instrumentation-name');
 
-  tracer.startSpan('span-not-sampled', attributes: [
-    samplingOffAttribute,
-  ]).end();
+  tracer
+      .startSpan('span-not-sampled', attributes: [samplingOffAttribute])
+      .end();
   tracer.startSpan('span-sampled').end();
 
   tp.shutdown();

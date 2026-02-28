@@ -20,12 +20,13 @@ void main() {
     final fooWithVersionTracer = provider.getTracer('foo', version: '1.0');
 
     expect(
-        fooTracer,
-        allOf([
-          isNot(barTracer),
-          isNot(fooWithVersionTracer),
-          same(provider.getTracer('foo'))
-        ]));
+      fooTracer,
+      allOf([
+        isNot(barTracer),
+        isNot(fooWithVersionTracer),
+        same(provider.getTracer('foo')),
+      ]),
+    );
 
     expect(provider.spanProcessors, isA<List<SpanProcessor>>());
   });
@@ -33,8 +34,9 @@ void main() {
   test('tracerProvider custom span processors', () {
     final mockProcessor1 = MockSpanProcessor();
     final mockProcessor2 = MockSpanProcessor();
-    final provider =
-        TracerProviderBase(processors: [mockProcessor1, mockProcessor2]);
+    final provider = TracerProviderBase(
+      processors: [mockProcessor1, mockProcessor2],
+    );
 
     expect(provider.spanProcessors, [mockProcessor1, mockProcessor2]);
   });
@@ -49,8 +51,9 @@ void main() {
   test('tracerProvider force flushes all processors', () {
     final mockProcessor1 = MockSpanProcessor();
     final mockProcessor2 = MockSpanProcessor();
-    TracerProviderBase(processors: [mockProcessor1, mockProcessor2])
-        .forceFlush();
+    TracerProviderBase(
+      processors: [mockProcessor1, mockProcessor2],
+    ).forceFlush();
 
     verify(mockProcessor1.forceFlush).called(1);
     verify(mockProcessor2.forceFlush).called(1);

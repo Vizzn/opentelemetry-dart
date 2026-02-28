@@ -28,13 +28,16 @@ class BatchSpanProcessor implements SpanProcessor {
 
   bool _isShutdown = false;
 
-  BatchSpanProcessor(this._exporter,
-      {int maxExportBatchSize = _DEFAULT_MAXIMUM_BATCH_SIZE,
-      int scheduledDelayMillis = _DEFAULT_EXPORT_DELAY})
-      : _maxExportBatchSize = maxExportBatchSize,
-        _maxQueueSize = _DEFAULT_MAXIMUM_QUEUE_SIZE {
+  BatchSpanProcessor(
+    this._exporter, {
+    int maxExportBatchSize = _DEFAULT_MAXIMUM_BATCH_SIZE,
+    int scheduledDelayMillis = _DEFAULT_EXPORT_DELAY,
+  }) : _maxExportBatchSize = maxExportBatchSize,
+       _maxQueueSize = _DEFAULT_MAXIMUM_QUEUE_SIZE {
     _timer = Timer.periodic(
-        Duration(milliseconds: scheduledDelayMillis), _exportBatch);
+      Duration(milliseconds: scheduledDelayMillis),
+      _exportBatch,
+    );
   }
 
   @override
@@ -70,7 +73,8 @@ class BatchSpanProcessor implements SpanProcessor {
     if (_spanBuffer.length >= _maxQueueSize) {
       // Buffer is full, drop span.
       _log.warning(
-          'Max queue size exceeded. Dropping ${_spanBuffer.length} spans.');
+        'Max queue size exceeded. Dropping ${_spanBuffer.length} spans.',
+      );
       return;
     }
 

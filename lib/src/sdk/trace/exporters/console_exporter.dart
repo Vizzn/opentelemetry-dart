@@ -19,7 +19,7 @@ class ConsoleExporter implements sdk.SpanExporter {
         'flags':
             '${span.spanContext.traceFlags.toRadixString(16).padLeft(2, '0')}',
         'state': '${span.spanContext.traceState}',
-        'status': span.status.code
+        'status': span.status.code,
       });
     }
   }
@@ -34,7 +34,8 @@ class ConsoleExporter implements sdk.SpanExporter {
   }
 
   @Deprecated(
-      'This method will be removed in 0.19.0. Use [SpanProcessor] instead.')
+    'This method will be removed in 0.19.0. Use [SpanProcessor] instead.',
+  )
   @override
   void forceFlush() {
     return;

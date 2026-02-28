@@ -10,7 +10,11 @@ class InstrumentationScope {
   final List<api.Attribute> _attributes;
 
   InstrumentationScope(
-      this._name, this._version, this._schemaUrl, this._attributes);
+    this._name,
+    this._version,
+    this._schemaUrl,
+    this._attributes,
+  );
 
   String get name {
     return _name;

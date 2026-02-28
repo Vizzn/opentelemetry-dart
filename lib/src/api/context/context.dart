@@ -32,9 +32,7 @@ class ContextStackEntry {
 }
 
 final _rootContext = Context._empty();
-final _stacks = <Zone, List<ContextStackEntry>>{
-  Zone.root: [],
-};
+final _stacks = <Zone, List<ContextStackEntry>>{Zone.root: []};
 
 Context contextWithSpan(Context parent, Span span) {
   return parent.setValue(_spanKey, span);
@@ -56,7 +54,8 @@ SpanContext spanContextFromContext(Context context) {
 /// attached and detached for any function that runs within the zone.
 @experimental
 Zone zone([Context? context]) => Zone.current.fork(
-        specification: ZoneSpecification(run: <R>(self, parent, zone, fn) {
+  specification: ZoneSpecification(
+    run: <R>(self, parent, zone, fn) {
       // Only attach the context when delegating this zone's run, not any
       // potential child. Otherwise, the child zone's current context would
       // end up being the outermost zone attached context.
@@ -73,7 +72,9 @@ Zone zone([Context? context]) => Zone.current.fork(
         return result;
       }
       return parent.run(zone, fn);
-    }));
+    },
+  ),
+);
 
 /// Returns the latest non-empty context stack, or the root stack if no context
 /// stack is found.
@@ -100,10 +101,7 @@ class Context {
   final ContextKey _key;
   final Object _value;
 
-  Context._empty()
-      : _parent = null,
-        _key = ContextKey(),
-        _value = Object();
+  Context._empty() : _parent = null, _key = ContextKey(), _value = Object();
 
   Context._(this._parent, this._key, this._value);
 
@@ -128,7 +126,8 @@ class Context {
   /// Multiple calls to this function with the same [name] will not return
   /// identical keys.
   @Deprecated(
-      'This method will be removed in 0.19.0. Use [ContextKey] instead.')
+    'This method will be removed in 0.19.0. Use [ContextKey] instead.',
+  )
   static ContextKey createKey(String name) => ContextKey();
 
   /// Attaches the given [Context] making it the active [Context] for the current
@@ -142,8 +141,11 @@ class Context {
   @experimental
   static ContextToken attach(Context context, [Zone? zone]) {
     final entry = ContextStackEntry(context);
-    _stacks.update(zone ?? Zone.current, (stack) => stack..add(entry),
-        ifAbsent: () => [entry]);
+    _stacks.update(
+      zone ?? Zone.current,
+      (stack) => stack..add(entry),
+      ifAbsent: () => [entry],
+    );
     return entry.token;
   }
 
@@ -231,7 +233,8 @@ class Context {
   /// Returns a new [Context] created from this one with the given [Span]
   /// set.
   @Deprecated(
-      'This method will be removed in 0.19.0. Use [contextWithSpan] instead.')
+    'This method will be removed in 0.19.0. Use [contextWithSpan] instead.',
+  )
   Context withSpan(Span span) => contextWithSpan(this, span);
 
   /// Execute a function [fn] within this [Context] and return its result.
@@ -241,13 +244,15 @@ class Context {
   /// Get the [Span] attached to this [Context], or a [NonRecordingSpan] if no
   /// such [Span] exists.
   @Deprecated(
-      'This method will be removed in 0.19.0. Use [spanFromContext] instead.')
+    'This method will be removed in 0.19.0. Use [spanFromContext] instead.',
+  )
   Span get span => spanFromContext(this);
 
   /// Get the [SpanContext] from this [Context], or an invalid [SpanContext] if
   /// no such [SpanContext] exists.
   @Deprecated(
-      'This method will be removed in 0.19.0. Use [spanContextFromContext] '
-      'instead.')
+    'This method will be removed in 0.19.0. Use [spanContextFromContext] '
+    'instead.',
+  )
   SpanContext get spanContext => spanContextFromContext(this);
 }

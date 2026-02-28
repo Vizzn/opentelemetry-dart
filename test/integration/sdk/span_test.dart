@@ -21,19 +21,28 @@ void main() {
     mockProcessor1 = MockSpanProcessor();
     mockProcessor2 = MockSpanProcessor();
     span = Span(
-        'foo',
-        api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([7, 8, 9]),
-            api.TraceFlags.none, api.TraceState.empty()),
-        parentSpanId,
-        [mockProcessor1, mockProcessor2],
-        sdk.DateTimeTimeProvider(),
-        sdk.Resource([]),
-        sdk.InstrumentationScope(
-            'library_name', 'library_version', 'url://schema', []),
-        api.SpanKind.internal,
+      'foo',
+      api.SpanContext(
+        api.TraceId([1, 2, 3]),
+        api.SpanId([7, 8, 9]),
+        api.TraceFlags.none,
+        api.TraceState.empty(),
+      ),
+      parentSpanId,
+      [mockProcessor1, mockProcessor2],
+      sdk.DateTimeTimeProvider(),
+      sdk.Resource([]),
+      sdk.InstrumentationScope(
+        'library_name',
+        'library_version',
+        'url://schema',
         [],
-        sdk.SpanLimits(),
-        sdk.DateTimeTimeProvider().now);
+      ),
+      api.SpanKind.internal,
+      [],
+      sdk.SpanLimits(),
+      sdk.DateTimeTimeProvider().now,
+    );
   });
 
   test('span set and end time', () {
@@ -61,19 +70,28 @@ void main() {
     final startTime = Int64(1000000000000);
     final endTime = Int64(1000000020000);
     final span = Span(
-        'foo',
-        api.SpanContext(api.TraceId([1, 2, 3]), api.SpanId([7, 8, 9]),
-            api.TraceFlags.none, api.TraceState.empty()),
-        parentSpanId,
-        [mockProcessor1, mockProcessor2],
-        sdk.DateTimeTimeProvider(),
-        sdk.Resource([]),
-        sdk.InstrumentationScope(
-            'library_name', 'library_version', 'url://schema', []),
-        api.SpanKind.internal,
+      'foo',
+      api.SpanContext(
+        api.TraceId([1, 2, 3]),
+        api.SpanId([7, 8, 9]),
+        api.TraceFlags.none,
+        api.TraceState.empty(),
+      ),
+      parentSpanId,
+      [mockProcessor1, mockProcessor2],
+      sdk.DateTimeTimeProvider(),
+      sdk.Resource([]),
+      sdk.InstrumentationScope(
+        'library_name',
+        'library_version',
+        'url://schema',
         [],
-        sdk.SpanLimits(),
-        startTime);
+      ),
+      api.SpanKind.internal,
+      [],
+      sdk.SpanLimits(),
+      startTime,
+    );
     expect(span.startTime, startTime);
     expect(span.endTime, isNull);
     expect(span.parentSpanId, same(parentSpanId));
@@ -197,8 +215,10 @@ void main() {
     expect(secondEvent.timestamp, isNotNull);
     expect(secondEvent.attributes, hasLength(expectedAttributeMap.length));
     for (final attribute in secondEvent.attributes) {
-      expect(attribute.value.runtimeType,
-          equals(expectedAttributeMap[attribute.key].runtimeType));
+      expect(
+        attribute.value.runtimeType,
+        equals(expectedAttributeMap[attribute.key].runtimeType),
+      );
       expect(attribute.value, equals(expectedAttributeMap[attribute.key]));
     }
   });
@@ -216,16 +236,18 @@ void main() {
         api.SemanticAttributes.exceptionMessage: 'Exception: Oh noes!',
         api.SemanticAttributes.exceptionStacktrace: anything,
         api.SemanticAttributes.exceptionEscaped: true,
-      })
+      }),
     ]);
   });
 }
 
 Matcher hasExceptionEvent(Map<String, Object> attributes) =>
     isA<api.SpanEvent>().having(
-        (e) => e.attributes,
+      (e) => e.attributes,
+      'attributes',
+      isA<Iterable<api.Attribute>>().having(
+        (a) => a.map((e) => [e.key, e.value]),
         'attributes',
-        isA<Iterable<api.Attribute>>().having(
-            (a) => a.map((e) => [e.key, e.value]),
-            'attributes',
-            containsAll(attributes.entries.map((e) => [e.key, e.value]))));
+        containsAll(attributes.entries.map((e) => [e.key, e.value])),
+      ),
+    );
