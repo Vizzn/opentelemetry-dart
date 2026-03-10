@@ -221,7 +221,7 @@ class CollectorExporter implements sdk.SpanExporter {
       traceId: span.spanContext.traceId.get(),
       spanId: span.spanContext.spanId.get(),
       traceState: span.spanContext.traceState.toString(),
-      parentSpanId: span.parentSpanId.get(),
+      parentSpanId: span.parentSpanId.isValid ? span.parentSpanId.get() : null,
       name: span.name,
       kind: spanKind,
       startTimeUnixNano: span.startTime,
