@@ -23,5 +23,6 @@ abstract class Tracer {
     List<api.Attribute> attributes,
     List<api.SpanLink> links,
     Int64 startTime,
+    bool newRoot,
   });
 }
